@@ -24,6 +24,7 @@ import org.eclipse.che.ide.ext.git.shared.CommitRequest;
 import org.eclipse.che.ide.ext.git.shared.GitUser;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.testng.MockitoTestNGListener;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -46,6 +47,8 @@ import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.write;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -75,9 +78,11 @@ public abstract class BaseTest {
         }
         init(repository);
         //setup connection
+
         user = newDTO(GitUser.class).withName("test_name").withEmail("test@email");
-        connectionFactory = new NativeGitConnectionFactory(null, loader, null);
-        connection = connectionFactory.getConnection(repository, user, NULL);
+        when(loader.getUser(eq("codenvy"))).thenReturn(user);
+        connectionFactory = new NativeGitConnectionFactory(null, loader);
+        connection = connectionFactory.getConnection(repository, NULL);
         addFile(repository.toPath(), "README.txt", CONTENT);
         connection.add(newDTO(AddRequest.class).withFilepattern(Arrays.asList("README.txt")));
         connection.commit(newDTO(CommitRequest.class).withMessage("Initial commit"));

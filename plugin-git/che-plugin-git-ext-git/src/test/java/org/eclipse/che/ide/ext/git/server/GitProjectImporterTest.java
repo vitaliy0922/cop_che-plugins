@@ -32,6 +32,7 @@ import org.eclipse.che.ide.ext.git.shared.BranchCheckoutRequest;
 import org.eclipse.che.ide.ext.git.shared.BranchCreateRequest;
 import org.eclipse.che.ide.ext.git.shared.BranchListRequest;
 import org.eclipse.che.ide.ext.git.shared.CommitRequest;
+import org.eclipse.che.ide.ext.git.shared.GitUser;
 import org.eclipse.che.ide.ext.git.shared.InitRequest;
 import org.eclipse.che.ide.ext.git.shared.LogRequest;
 import org.eclipse.che.ide.ext.git.shared.Revision;
@@ -49,7 +50,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
 import java.io.BufferedWriter;
@@ -72,6 +73,8 @@ public class GitProjectImporterTest {
     private UserProfileDao userProfileDao;
     @Mock
     private SshKeyStore    sshKeyStore;
+    @Mock
+    private CredentialsProvider credentialsProvider;
 
     private GitConnectionFactory gitFactory;
     private File                 fsRoot;
@@ -93,6 +96,8 @@ public class GitProjectImporterTest {
                 bind(GitConnectionFactory.class).to(NativeGitConnectionFactory.class);
                 bind(UserProfileDao.class).toInstance(userProfileDao);
                 bind(SshKeyStore.class).toInstance(sshKeyStore);
+                Multibinder<CredentialsProvider> credentialsProviderMultibinder = Multibinder.newSetBinder(binder(), CredentialsProvider.class);
+                credentialsProviderMultibinder.addBinding().toInstance(credentialsProvider);
                 Multibinder.newSetBinder(binder(), SshKeyUploader.class);
                 Multibinder.newSetBinder(binder(), CredentialsProvider.class);
             }
@@ -116,8 +121,11 @@ public class GitProjectImporterTest {
         profileAttributes.put("firstName", "Codenvy");
         profileAttributes.put("lastName", "Codenvy");
         profileAttributes.put("email", "codenvy@codenvy.com");
-        Mockito.when(userProfileDao.getById("codenvy"))
+        when(userProfileDao.getById("codenvy"))
                .thenReturn(new Profile().withId("codenvy").withUserId("codenvy").withAttributes(profileAttributes));
+        when(credentialsProvider.getUser()).thenReturn(  DtoFactory.getInstance().createDto(GitUser.class).withName("test_name")
+                                                                              .withEmail("test@email"));
+        when(credentialsProvider.getId()).thenReturn("codenvy");
 
         // init source git repository
         gitRepo = new File(target, "git");

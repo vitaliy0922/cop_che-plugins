@@ -93,7 +93,6 @@ public class NativeGitConnection implements GitConnection {
     private final NativeGit         nativeGit;
     private final CredentialsLoader credentialsLoader;
     private final GitAskPassScript  gitAskPassScript;
-    private final GitUser           user;
     private final SshKeysManager    keysManager;
 
     private static final Pattern authErrorPattern =
@@ -107,8 +106,6 @@ public class NativeGitConnection implements GitConnection {
     /**
      * @param repository
      *         directory where commands will be invoked
-     * @param user
-     *         git user
      * @param keysManager
      *         manager for ssh keys. If it is null default ssh will be used;
      * @param credentialsLoader
@@ -116,16 +113,14 @@ public class NativeGitConnection implements GitConnection {
      * @throws GitException
      *         when some error occurs
      */
-    public NativeGitConnection(File repository, GitUser user, SshKeysManager keysManager, CredentialsLoader credentialsLoader)
+    public NativeGitConnection(File repository, SshKeysManager keysManager, CredentialsLoader credentialsLoader)
             throws GitException {
-        this(new NativeGit(repository), user, keysManager, credentialsLoader, new GitAskPassScript());
+        this(new NativeGit(repository), keysManager, credentialsLoader, new GitAskPassScript());
     }
 
     /**
      * @param nativeGit
      *         native git client
-     * @param user
-     *         git user
      * @param keysManager
      *         manager for ssh keys. If it is null default ssh will be used;
      * @param credentialsLoader
@@ -134,13 +129,11 @@ public class NativeGitConnection implements GitConnection {
      *         when some error occurs
      */
     public NativeGitConnection(NativeGit nativeGit,
-                               GitUser user,
                                SshKeysManager keysManager,
                                CredentialsLoader credentialsLoader,
                                GitAskPassScript gitAskPassScript
                               )
             throws GitException {
-        this.user = user;
         this.keysManager = keysManager;
         this.credentialsLoader = credentialsLoader;
         this.nativeGit = nativeGit;
@@ -391,7 +384,7 @@ public class NativeGitConnection implements GitConnection {
                          .setFilePattern(new ArrayList<>(Arrays.asList(".")))
                          .execute();
                 nativeGit.createCommitCommand()
-                         .setCommitter(getUser())
+                         .setCommitter(getLocalCommitter())
                          .setMessage("init")
                          .execute();
             } catch (GitException ignored) {
@@ -578,11 +571,6 @@ public class NativeGitConnection implements GitConnection {
     }
 
     @Override
-    public GitUser getUser() {
-        return user;
-    }
-
-    @Override
     public List<GitUser> getCommiters() throws GitException {
         List<GitUser> users = new LinkedList<>();
         List<Revision> revList = nativeGit.createLogCommand().execute();
@@ -734,18 +722,15 @@ public class NativeGitConnection implements GitConnection {
         return branchRef.substring(remoteStartIndex, remoteEndIndex);
     }
 
-    private GitUser getLocalCommitter() {
-        GitUser committer = user;
+    private GitUser getLocalCommitter() throws GitException {
+        String credentialsProvider = "codenvy";
         try {
-            String credentialsProvider = getConfig().get("codenvy.credentialsProvider");
-            GitUser providerUser = credentialsLoader.getUser(credentialsProvider);
-            if (providerUser != null) {
-                committer = providerUser;
-            }
+            credentialsProvider = getConfig().get("codenvy.credentialsProvider");
         } catch (GitException e) {
             //ignore property not found.
         }
-        return committer;
+
+        return credentialsLoader.getUser(credentialsProvider);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class PropertyEditorPresenterTest extends BaseSubversionPresenterTest {
         when(selection.getAllElements()).thenReturn(nodes);
         when(folderNode.getPath()).thenReturn("/foo");
         when(projectNode.getPath()).thenReturn("/");
-        when(folderNode.getProject()).thenReturn(projectNode);
+//        when(folderNode.getProject()).thenReturn(projectNode);
 
         presenter.onOkClicked();
 
@@ -119,7 +119,7 @@ public class PropertyEditorPresenterTest extends BaseSubversionPresenterTest {
         when(selection.getAllElements()).thenReturn(nodes);
         when(folderNode.getPath()).thenReturn("/foo");
         when(projectNode.getPath()).thenReturn("/");
-        when(folderNode.getProject()).thenReturn(projectNode);
+//        when(folderNode.getProject()).thenReturn(projectNode);
 
         presenter.onOkClicked();
 

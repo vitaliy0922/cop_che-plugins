@@ -15,25 +15,23 @@ import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
 import org.eclipse.che.ide.api.project.tree.generic.ProjectNode;
 import org.eclipse.che.ide.api.project.tree.generic.StorableNode;
 import org.eclipse.che.ide.api.selection.Selection;
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.rest.AsyncRequestCallback;
-
-import org.eclipse.che.ide.ext.svn.client.add.AddPresenter;
 import org.eclipse.che.ide.ext.svn.client.common.BaseSubversionPresenterTest;
 import org.eclipse.che.ide.ext.svn.shared.CLIOutputResponse;
 import org.eclipse.che.ide.ext.svn.utils.TestUtils;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.eclipse.che.ide.ext.svn.client.add.AddPresenter}.
@@ -77,9 +75,9 @@ public class AddPresenterTest extends BaseSubversionPresenterTest {
         when(projectExplorerPart.getSelection()).thenReturn(selection);
         when(selection.isEmpty()).thenReturn(false);
         when(selection.getAllElements()).thenReturn(allItems);
-        when(fileNode.getProject()).thenReturn(project);
+//        when(fileNode.getProject()).thenReturn(project);
         when(fileNode.getPath()).thenReturn(PROJECT_PATH + "/" + "file");
-        when(folderNode.getProject()).thenReturn(project);
+//        when(folderNode.getProject()).thenReturn(project);
         when(folderNode.getPath()).thenReturn(PROJECT_PATH + "/" + "folder");
         when(project.getPath()).thenReturn(PROJECT_PATH);
 

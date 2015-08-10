@@ -10,16 +10,19 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.newsourcefile;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.event.FileEvent;
-import org.eclipse.che.ide.api.event.ItemEvent;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
-import org.eclipse.che.ide.api.project.tree.generic.ItemNode;
 import org.eclipse.che.ide.api.selection.SelectionAgent;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.collections.Collections;
@@ -30,13 +33,8 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.web.bindery.event.shared.EventBus;
 
 import static org.eclipse.che.ide.api.event.FileEvent.FileOperation.OPEN;
-import static org.eclipse.che.ide.api.event.ItemEvent.ItemOperation.CREATED;
 import static org.eclipse.che.ide.ext.java.client.JavaUtils.checkCompilationUnitName;
 import static org.eclipse.che.ide.ext.java.client.JavaUtils.checkPackageName;
 import static org.eclipse.che.ide.ext.java.client.JavaUtils.isValidCompilationUnitName;
@@ -246,7 +244,7 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
                     @Override
                     public void onSuccess(TreeNode<?> result) {
                         if (result != null) {
-                            eventBus.fireEvent(new ItemEvent((ItemNode)result, CREATED));
+//                            eventBus.fireEvent(new ItemEvent((ItemNode)result, CREATED));
                             eventBus.fireEvent(new FileEvent((VirtualFile)result, OPEN));
                         }
                     }

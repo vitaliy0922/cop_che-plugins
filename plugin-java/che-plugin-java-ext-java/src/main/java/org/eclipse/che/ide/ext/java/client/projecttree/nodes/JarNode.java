@@ -78,7 +78,7 @@ public class JarNode extends AbstractTreeNode<Jar> {
     @Override
     public void refreshChildren(final AsyncCallback<TreeNode<?>> callback) {
         Unmarshallable<Array<JarEntry>> unmarshaller = factory.newArrayUnmarshaller(JarEntry.class);
-        service.getLibraryChildren(getParent().getProject().getPath(), getData().getId(),
+        service.getLibraryChildren(getParent().getProject().getProjectDescriptor().getPath(), getData().getId(),
                                    new AsyncRequestCallback<Array<JarEntry>>(unmarshaller) {
                                        @Override
                                        protected void onSuccess(Array<JarEntry> result) {

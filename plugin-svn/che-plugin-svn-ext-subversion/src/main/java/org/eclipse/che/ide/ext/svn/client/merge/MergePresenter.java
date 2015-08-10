@@ -14,13 +14,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.NotificationManager;
-import org.eclipse.che.ide.api.parts.ProjectExplorerPart;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
+import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
-import org.eclipse.che.ide.api.project.tree.generic.ProjectNode;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.collections.Collections;
 import org.eclipse.che.ide.ext.svn.client.SubversionClientService;
@@ -30,6 +31,7 @@ import org.eclipse.che.ide.ext.svn.client.common.filteredtree.FilteredTreeStruct
 import org.eclipse.che.ide.ext.svn.shared.CLIOutputResponse;
 import org.eclipse.che.ide.ext.svn.shared.InfoResponse;
 import org.eclipse.che.ide.ext.svn.shared.SubversionItem;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.ui.tree.TreeNodeElement;
@@ -72,7 +74,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
                           final EventBus eventBus,
                           final RawOutputPresenter console,
                           final WorkspaceAgent workspaceAgent,
-                          final ProjectExplorerPart projectExplorerPart,
+                          final NewProjectExplorerPresenter projectExplorerPart,
                           final NotificationManager notificationManager,
                           final FilteredTreeStructureProvider treeStructureProvider) {
         super(appContext, eventBus, console, workspaceAgent, projectExplorerPart);
@@ -340,8 +342,19 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
 
         @Nonnull
         @Override
-        public ProjectNode getProject() {
-            return null;
+        public HasProjectDescriptor getProject() {
+            return new HasProjectDescriptor() {
+                @Nonnull
+                @Override
+                public ProjectDescriptor getProjectDescriptor() {
+                    return null;
+                }
+
+                @Override
+                public void setProjectDescriptor(@Nonnull ProjectDescriptor projectDescriptor) {
+                    //stub
+                }
+            };
         }
 
         @Nonnull

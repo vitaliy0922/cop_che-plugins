@@ -10,25 +10,23 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.action;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.CurrentProject;
-import org.eclipse.che.ide.api.event.ItemEvent;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.project.tree.AbstractTreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
-import org.eclipse.che.ide.api.project.tree.generic.ItemNode;
 import org.eclipse.che.ide.api.project.tree.generic.StorableNode;
-import org.eclipse.che.ide.api.selection.Selection;
-import org.eclipse.che.ide.commons.exception.ServerException;
 import org.eclipse.che.ide.ext.java.client.JavaLocalizationConstant;
 import org.eclipse.che.ide.ext.java.client.JavaResources;
 import org.eclipse.che.ide.ext.java.client.JavaUtils;
 import org.eclipse.che.ide.ext.java.client.projecttree.JavaTreeStructure;
 import org.eclipse.che.ide.ext.java.client.projecttree.nodes.AbstractSourceContainerNode;
 import org.eclipse.che.ide.ext.java.client.projecttree.nodes.PackageNode;
-import org.eclipse.che.ide.json.JsonHelper;
 import org.eclipse.che.ide.newresource.AbstractNewResourceAction;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.Unmarshallable;
@@ -36,13 +34,8 @@ import org.eclipse.che.ide.ui.dialogs.InputCallback;
 import org.eclipse.che.ide.ui.dialogs.input.InputDialog;
 import org.eclipse.che.ide.ui.dialogs.input.InputValidator;
 import org.eclipse.che.ide.util.loging.Log;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nullable;
-
-import static org.eclipse.che.ide.api.event.ItemEvent.ItemOperation.CREATED;
 
 /**
  * Action to create new Java package.
@@ -74,30 +67,30 @@ public class NewPackageAction extends AbstractNewResourceAction {
     }
 
     private void onAccepted(String value) {
-        final StorableNode parent = getNewResourceParent();
-        if (parent == null) {
-            throw new IllegalStateException("No selected parent.");
-        }
-
-        createPackage(parent, value, new AsyncCallback<ItemReference>() {
-            @Override
-            public void onSuccess(ItemReference result) {
-                final AbstractTreeNode nodeToRefresh = getNodeToRefresh((AbstractSourceContainerNode)parent);
-                eventBus.fireEvent(new RefreshProjectTreeEvent(nodeToRefresh));
-
-                fireNodeCreated(result.getPath());
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                if (caught instanceof ServerException) {
-                    String message = JsonHelper.parseJsonMessage(caught.getMessage());
-                    dialogFactory.createMessageDialog("", message, null).show();
-                } else {
-                    dialogFactory.createMessageDialog("", caught.getMessage(), null).show();
-                }
-            }
-        });
+//        final StorableNode parent = getResourceBasedNode();
+//        if (parent == null) {
+//            throw new IllegalStateException("No selected parent.");
+//        }
+//
+//        createPackage(parent, value, new AsyncCallback<ItemReference>() {
+//            @Override
+//            public void onSuccess(ItemReference result) {
+//                final AbstractTreeNode nodeToRefresh = getNodeToRefresh((AbstractSourceContainerNode)parent);
+//                eventBus.fireEvent(new RefreshProjectTreeEvent(nodeToRefresh));
+//
+//                fireNodeCreated(result.getPath());
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable caught) {
+//                if (caught instanceof ServerException) {
+//                    String message = JsonHelper.parseJsonMessage(caught.getMessage());
+//                    dialogFactory.createMessageDialog("", message, null).show();
+//                } else {
+//                    dialogFactory.createMessageDialog("", caught.getMessage(), null).show();
+//                }
+//            }
+//        });
     }
 
     private void fireNodeCreated(String path) {
@@ -109,7 +102,7 @@ public class NewPackageAction extends AbstractNewResourceAction {
         currentProject.getCurrentTree().getNodeByPath(path, new AsyncCallback<TreeNode<?>>() {
             @Override
             public void onSuccess(TreeNode<?> result) {
-                eventBus.fireEvent(new ItemEvent((ItemNode)result, CREATED));
+//                eventBus.fireEvent(new ItemEvent((ItemNode)result, CREATED));
             }
 
             @Override
@@ -136,10 +129,10 @@ public class NewPackageAction extends AbstractNewResourceAction {
     @Override
     public void updateProjectAction(ActionEvent e) {
         boolean enabled = false;
-        Selection<?> selection = selectionAgent.getSelection();
-        if (selection != null) {
-            enabled = selection.getFirstElement() instanceof AbstractSourceContainerNode;
-        }
+//        Selection<?> selection = selectionAgent.getSelection();
+//        if (selection != null) {
+//            enabled = selection.getFirstElement() instanceof AbstractSourceContainerNode;
+//        }
         e.getPresentation().setEnabledAndVisible(enabled);
     }
 

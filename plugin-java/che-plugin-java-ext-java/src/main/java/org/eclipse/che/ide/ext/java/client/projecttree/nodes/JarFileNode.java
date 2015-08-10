@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.projecttree.nodes;
 
+import org.eclipse.che.api.promises.client.Promise;
+import org.eclipse.che.api.promises.client.callback.AsyncPromiseHelper;
+import org.eclipse.che.api.promises.client.js.JsPromise;
+import org.eclipse.che.api.promises.client.js.JsPromiseError;
+import org.eclipse.che.api.promises.client.js.Promises;
 import org.eclipse.che.ide.api.event.FileEvent;
 import org.eclipse.che.ide.api.icon.IconRegistry;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
@@ -54,7 +59,7 @@ public class JarFileNode extends JarEntryNode implements VirtualFile {
         super(parent, data, treeStructure, eventBus, libId, service, dtoUnmarshallerFactory);
         String[] split = data.getName().split("\\.");
         String ext = split[split.length - 1];
-        setDisplayIcon(iconRegistry.getIcon(getProject().getProjectTypeId() + "/" + ext + ".file.small.icon").getSVGImage());
+        setDisplayIcon(iconRegistry.getIcon(getProject().getProjectDescriptor().getType() + "/" + ext + ".file.small.icon").getSVGImage());
     }
 
     @Override
@@ -97,26 +102,31 @@ public class JarFileNode extends JarEntryNode implements VirtualFile {
 
     @Override
     public String getContentUrl() {
-        return service.getContentUrl(getProject().getPath(), libId, getData().getPath());
+        return service.getContentUrl(getProject().getProjectDescriptor().getPath(), libId, getData().getPath());
     }
 
     @Override
-    public void getContent(final AsyncCallback<String> callback) {
-        service.getContent(getProject().getPath(), libId, getData().getPath(), new AsyncRequestCallback<String>(new StringUnmarshaller()) {
+    public Promise<String> getContent() {
+        return AsyncPromiseHelper.createFromAsyncRequest(new AsyncPromiseHelper.RequestCall<String>() {
             @Override
-            protected void onSuccess(String result) {
-                callback.onSuccess(result);
-            }
+            public void makeCall(final AsyncCallback<String> callback) {
+                service.getContent(getProject().getProjectDescriptor().getPath(), libId, getData().getPath(), new AsyncRequestCallback<String>(new StringUnmarshaller()) {
+                    @Override
+                    protected void onSuccess(String result) {
+                        callback.onSuccess(result);
+                    }
 
-            @Override
-            protected void onFailure(Throwable exception) {
-                callback.onFailure(exception);
+                    @Override
+                    protected void onFailure(Throwable exception) {
+                        callback.onFailure(exception);
+                    }
+                });
             }
         });
     }
 
     @Override
-    public void updateContent(String content, AsyncCallback<Void> callback) {
-        throw new UnsupportedOperationException("Update content on class file is not supported.");
+    public Promise<Void> updateContent(String content) {
+        return Promises.reject(JsPromiseError.create("Update content on class file is not supported."));
     }
 }

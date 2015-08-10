@@ -384,7 +384,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(editor).getEditorInput();
         verify(editorInput).getFile();
 
-        verify(file).getContent(editorTextCaptor.capture());
+        verify(file).getContent(null);
         editorTextCaptor.getValue().onSuccess(TEXT);
 
         verify(currentProject, times(2)).getProjectDescription();
@@ -425,7 +425,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(editor).getEditorInput();
         verify(editorInput).getFile();
 
-        verify(file).getContent(editorTextCaptor.capture());
+        verify(file).getContent();
         editorTextCaptor.getValue().onSuccess(TEXT);
 
         verify(currentProject, times(2)).getProjectDescription();
@@ -457,7 +457,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(editor).getEditorInput();
         verify(editorInput).getFile();
 
-        verify(file).getContent(editorTextCaptor.capture());
+        verify(file).getContent();
         editorTextCaptor.getValue().onFailure(exception);
 
         verify(exception).getMessage();

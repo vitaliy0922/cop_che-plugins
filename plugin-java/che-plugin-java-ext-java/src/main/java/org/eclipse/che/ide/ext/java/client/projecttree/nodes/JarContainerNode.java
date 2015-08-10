@@ -55,7 +55,7 @@ public class JarContainerNode extends JarEntryNode {
         if(data.getType() == JarEntry.JarEntryType.PACKAGE){
             setDisplayIcon(iconRegistry.getIcon("java.package").getSVGImage());
         } else {
-            setDisplayIcon(iconRegistry.getIcon(getProject().getProjectTypeId() + ".folder.small.icon").getSVGImage());
+            setDisplayIcon(iconRegistry.getIcon(getProject().getProjectDescriptor().getType() + ".folder.small.icon").getSVGImage());
         }
     }
 
@@ -73,7 +73,7 @@ public class JarContainerNode extends JarEntryNode {
     @Override
     public void refreshChildren(final AsyncCallback<TreeNode<?>> callback) {
         Unmarshallable<Array<JarEntry>> unmarshaller = dtoUnmarshallerFactory.newArrayUnmarshaller(JarEntry.class);
-        service.getChildren(getProject().getPath(), libId, getData().getPath(), new AsyncRequestCallback<Array<JarEntry>>(unmarshaller) {
+        service.getChildren(getProject().getProjectDescriptor().getPath(), libId, getData().getPath(), new AsyncRequestCallback<Array<JarEntry>>(unmarshaller) {
             @Override
             protected void onSuccess(Array<JarEntry> result) {
                 Array<TreeNode<?>> nodes = Collections.createArray();

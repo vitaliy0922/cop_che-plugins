@@ -73,7 +73,7 @@ public class StatusPresenterTest extends BaseSubversionPresenterTest {
         when(projectExplorerPart.getSelection()).thenReturn(selection);
         when(selection.isEmpty()).thenReturn(false);
         when(selection.getAllElements()).thenReturn(allItems);
-        when(project.getProject()).thenReturn(project);
+//        when(project.getProject()).thenReturn(project);
         when(project.getPath()).thenReturn(PROJECT_PATH);
 
         presenter.showStatus();
@@ -102,9 +102,9 @@ public class StatusPresenterTest extends BaseSubversionPresenterTest {
         when(projectExplorerPart.getSelection()).thenReturn(selection);
         when(selection.isEmpty()).thenReturn(false);
         when(selection.getAllElements()).thenReturn(allItems);
-        when(fileNode.getProject()).thenReturn(project);
+//        when(fileNode.getProject()).thenReturn(project);
         when(fileNode.getPath()).thenReturn(PROJECT_PATH + "/" + "file");
-        when(folderNode.getProject()).thenReturn(project);
+//        when(folderNode.getProject()).thenReturn(project);
         when(folderNode.getPath()).thenReturn(PROJECT_PATH + "/" + "folder");
         when(project.getPath()).thenReturn(PROJECT_PATH);
 

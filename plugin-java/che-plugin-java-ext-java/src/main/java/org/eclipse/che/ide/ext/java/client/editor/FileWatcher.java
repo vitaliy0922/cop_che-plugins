@@ -12,8 +12,6 @@ package org.eclipse.che.ide.ext.java.client.editor;
 
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
-import org.eclipse.che.ide.api.event.ItemEvent;
-import org.eclipse.che.ide.api.event.ItemHandler;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.PropertyListener;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
@@ -21,6 +19,8 @@ import org.eclipse.che.ide.collections.StringMap;
 import org.eclipse.che.ide.ext.java.client.projecttree.nodes.PackageNode;
 import org.eclipse.che.ide.ext.java.client.projecttree.nodes.SourceFileNode;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
+import org.eclipse.che.ide.project.event.ResourceNodeEvent;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -39,22 +39,39 @@ public class FileWatcher {
 
     @Inject
     private void handleFileOperations(EventBus eventBus) {
-        eventBus.addHandler(ItemEvent.TYPE, new ItemHandler() {
-            @Override
-            public void onItem(ItemEvent event) {
-                if (event.getOperation() == ItemEvent.ItemOperation.DELETED) {
-                    if (event.getItem() instanceof SourceFileNode) {
-                        String fqn = getFQN(((SourceFileNode)event.getItem()));
-                        worker.removeFqnFromCache(fqn);
-                        reparseAllOpenedFiles();
-                    } else if (event.getItem() instanceof PackageNode) {
-                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
-                        reparseAllOpenedFiles();
-                    }
 
+        eventBus.addHandler(ResourceNodeEvent.getType(), new ResourceNodeEvent.ResourceNodeHandler() {
+            @Override
+            public void onResourceEvent(ResourceNodeEvent event) {
+                if (event.getEvent() == ResourceNodeEvent.Event.DELETED) {
+//                    if (event.getItem() instanceof SourceFileNode) {
+//                        String fqn = getFQN(((SourceFileNode)event.getItem()));
+//                        worker.removeFqnFromCache(fqn);
+//                        reparseAllOpenedFiles();
+//                    } else if (event.getItem() instanceof PackageNode) {
+//                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
+//                        reparseAllOpenedFiles();
+//                    }
                 }
             }
         });
+
+//        eventBus.addHandler(ItemEvent.TYPE, new ItemHandler() {
+//            @Override
+//            public void onItem(ItemEvent event) {
+//                if (event.getOperation() == ItemEvent.ItemOperation.DELETED) {
+//                    if (event.getItem() instanceof SourceFileNode) {
+//                        String fqn = getFQN(((SourceFileNode)event.getItem()));
+//                        worker.removeFqnFromCache(fqn);
+//                        reparseAllOpenedFiles();
+//                    } else if (event.getItem() instanceof PackageNode) {
+//                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
+//                        reparseAllOpenedFiles();
+//                    }
+//
+//                }
+//            }
+//        });
     }
 
 

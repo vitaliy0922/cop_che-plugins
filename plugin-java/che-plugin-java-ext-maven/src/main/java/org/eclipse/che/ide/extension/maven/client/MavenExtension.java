@@ -92,7 +92,7 @@ public class MavenExtension {
         eventBus.addHandler(BeforeModuleOpenEvent.TYPE, new BeforeModuleOpenHandler() {
             @Override
             public void onBeforeModuleOpen(BeforeModuleOpenEvent event) {
-                if (isValidForResolveDependencies(event.getModule().getProject().getData())) {
+                if (isValidForResolveDependencies(event.getModule().getProject().getProjectDescriptor())) {
                     dependenciesUpdater.updateDependencies(event.getModule().getData(), false);
                 }
             }

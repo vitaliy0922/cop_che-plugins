@@ -13,6 +13,7 @@ package org.eclipse.che.ide.ext.java.client.editor;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
+import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
@@ -88,10 +89,10 @@ public class OpenDeclarationFinder {
         }
     }
 
-    private void sendRequest(String bindingKey, ProjectNode project) {
+    private void sendRequest(String bindingKey, HasProjectDescriptor project) {
         Unmarshallable<OpenDeclarationDescriptor> unmarshaller =
                 factory.newUnmarshaller(OpenDeclarationDescriptor.class);
-        service.findDeclaration(project.getPath(), bindingKey, new AsyncRequestCallback<OpenDeclarationDescriptor>(unmarshaller) {
+        service.findDeclaration(project.getProjectDescriptor().getPath(), bindingKey, new AsyncRequestCallback<OpenDeclarationDescriptor>(unmarshaller) {
             @Override
             protected void onSuccess(OpenDeclarationDescriptor result) {
                 if (result != null) {

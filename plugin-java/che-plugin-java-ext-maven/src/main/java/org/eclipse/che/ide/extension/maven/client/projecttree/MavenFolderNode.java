@@ -52,7 +52,7 @@ public class MavenFolderNode extends JavaFolderNode {
     /** {@inheritDoc} */
     @Override
     public void refreshChildren(final AsyncCallback<TreeNode<?>> callback) {
-        getModules(getProject().getData(), new AsyncCallback<Array<ProjectDescriptor>>() {
+        getModules(getProject().getProjectDescriptor(), new AsyncCallback<Array<ProjectDescriptor>>() {
             @Override
             public void onSuccess(final Array<ProjectDescriptor> modules) {
                 getChildren(getData().getPath(), new AsyncCallback<Array<ItemReference>>() {

@@ -20,10 +20,13 @@ import com.google.web.bindery.event.shared.EventBus;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
-import org.eclipse.che.ide.api.parts.ProjectExplorerPart;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
-import org.eclipse.che.ide.api.project.tree.generic.*;
+import org.eclipse.che.ide.api.project.tree.generic.FileNode;
+import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
+import org.eclipse.che.ide.api.project.tree.generic.Openable;
+import org.eclipse.che.ide.api.project.tree.generic.ProjectNode;
+import org.eclipse.che.ide.api.project.tree.generic.StorableNode;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.ext.svn.client.SubversionClientService;
 import org.eclipse.che.ide.ext.svn.client.SubversionExtensionLocalizationConstants;
@@ -31,13 +34,13 @@ import org.eclipse.che.ide.ext.svn.client.common.RawOutputPresenter;
 import org.eclipse.che.ide.ext.svn.client.common.SubversionActionPresenter;
 import org.eclipse.che.ide.ext.svn.client.common.filteredtree.FilteredTreeStructureProvider;
 import org.eclipse.che.ide.ext.svn.shared.CLIOutputResponse;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.util.RegExpUtils;
 import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
 import static org.eclipse.che.ide.api.notification.Notification.Status.PROGRESS;
@@ -99,7 +102,7 @@ public class CopyPresenter extends SubversionActionPresenter implements CopyView
                             DtoUnmarshallerFactory dtoUnmarshallerFactory,
                             FilteredTreeStructureProvider treeStructureProvider,
                             SubversionExtensionLocalizationConstants constants,
-                            final ProjectExplorerPart projectExplorerPart) {
+                            final NewProjectExplorerPresenter projectExplorerPart) {
         super(appContext, eventBus, console, workspaceAgent, projectExplorerPart);
         this.appContext = appContext;
         this.eventBus = eventBus;

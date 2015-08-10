@@ -78,7 +78,7 @@ public class ExternalLibrariesNode extends AbstractTreeNode<Object> implements O
     @Override
     public void refreshChildren(final AsyncCallback<TreeNode<?>> callback) {
         Unmarshallable<Array<Jar>> unmarshaller = dtoUnmarshallerFactory.newArrayUnmarshaller(Jar.class);
-        service.getExternalLibraries(getParent().getProject().getPath(), new AsyncRequestCallback<Array<Jar>>(unmarshaller) {
+        service.getExternalLibraries(getParent().getProject().getProjectDescriptor().getPath(), new AsyncRequestCallback<Array<Jar>>(unmarshaller) {
             @Override
             protected void onSuccess(Array<Jar> result) {
                 Array<TreeNode<?>> array = Collections.createArray();

@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Evgen Vidolob
  */
+@Deprecated
 public abstract class JarEntryNode extends AbstractTreeNode<JarEntry> {
 
     protected final JavaNavigationService  service;

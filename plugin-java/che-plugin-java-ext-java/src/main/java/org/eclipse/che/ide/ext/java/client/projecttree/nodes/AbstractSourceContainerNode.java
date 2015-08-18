@@ -39,6 +39,7 @@ import java.util.Comparator;
  * @see SourceFolderNode
  * @see PackageNode
  */
+@Deprecated
 public abstract class AbstractSourceContainerNode extends FolderNode {
     protected static final Comparator<TreeNode> NODE_COMPARATOR = new NodeComparator();
 

@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
  * @author Artem Zatsarynnyy
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 public class JavaProjectNode extends ProjectNode {
 
     protected boolean shouldAddExternalLibrariesNode = true;

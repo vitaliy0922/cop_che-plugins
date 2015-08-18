@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.newsourcefile;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -17,22 +18,38 @@ import com.google.web.bindery.event.shared.EventBus;
 
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
+import org.eclipse.che.api.promises.client.Function;
+import org.eclipse.che.api.promises.client.FunctionException;
+import org.eclipse.che.api.promises.client.Operation;
+import org.eclipse.che.api.promises.client.OperationException;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.event.FileEvent;
+import org.eclipse.che.ide.api.project.node.HasStorablePath;
+import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
-import org.eclipse.che.ide.api.selection.SelectionAgent;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.collections.Collections;
 import org.eclipse.che.ide.commons.exception.ServerException;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.PackageNode;
+import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
 import org.eclipse.che.ide.json.JsonHelper;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
+import org.eclipse.che.ide.project.event.ResourceNodeEvent;
+import org.eclipse.che.ide.project.node.AbstractProjectBasedNode;
+import org.eclipse.che.ide.project.node.FileReferenceNode;
+import org.eclipse.che.ide.project.node.FolderReferenceNode;
+import org.eclipse.che.ide.project.node.ItemReferenceBasedNode;
+import org.eclipse.che.ide.project.node.NodeManager;
+import org.eclipse.che.ide.project.node.ResourceBasedNode;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 import static org.eclipse.che.ide.api.event.FileEvent.FileOperation.OPEN;
 import static org.eclipse.che.ide.ext.java.client.JavaUtils.checkCompilationUnitName;
@@ -53,23 +70,27 @@ import static org.eclipse.che.ide.ext.java.client.newsourcefile.JavaSourceFileTy
 public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionDelegate {
     private static final String DEFAULT_CONTENT = " {\n}\n";
 
-    private final NewJavaSourceFileView     view;
-    private final SelectionAgent            selectionAgent;
-    private final ProjectServiceClient      projectServiceClient;
-    private final DtoUnmarshallerFactory    dtoUnmarshallerFactory;
-    private final EventBus                  eventBus;
-    private final DialogFactory             dialogFactory;
-    private final Array<JavaSourceFileType> sourceFileTypes;
-    private final AppContext                appContext;
+    private final NewJavaSourceFileView       view;
+    private final NewProjectExplorerPresenter projectExplorer;
+    private final ProjectServiceClient        projectServiceClient;
+    private final DtoUnmarshallerFactory      dtoUnmarshallerFactory;
+    private final EventBus                    eventBus;
+    private final DialogFactory               dialogFactory;
+    private final Array<JavaSourceFileType>   sourceFileTypes;
+    private final AppContext                  appContext;
+    private final NodeManager                 nodeManager;
 
     @Inject
-    public NewJavaSourceFilePresenter(NewJavaSourceFileView view, SelectionAgent selectionAgent, ProjectServiceClient projectServiceClient,
+    public NewJavaSourceFilePresenter(NewJavaSourceFileView view, NewProjectExplorerPresenter projectExplorer,
+                                      ProjectServiceClient projectServiceClient,
                                       DtoUnmarshallerFactory dtoUnmarshallerFactory, EventBus eventBus, DialogFactory dialogFactory,
-                                      AppContext appContext) {
+                                      AppContext appContext,
+                                      NodeManager nodeManager) {
         this.appContext = appContext;
+        this.nodeManager = nodeManager;
         sourceFileTypes = Collections.createArray(CLASS, INTERFACE, ENUM, ANNOTATION);
         this.view = view;
-        this.selectionAgent = selectionAgent;
+        this.projectExplorer = projectExplorer;
         this.projectServiceClient = projectServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.eventBus = eventBus;
@@ -115,7 +136,8 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
         }
         if (isValidCompilationUnitName(fileNameWithExtension)) {
             view.close();
-            final FolderNode parent = (FolderNode)selectionAgent.getSelection().getFirstElement();
+
+            FolderReferenceNode parent = (FolderReferenceNode)projectExplorer.getSelection().getHeadElement();
             switch (view.getSelectedType()) {
                 case CLASS:
                     createClass(fileNameWithoutExtension, parent, packageFragment);
@@ -153,38 +175,38 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
         return "";
     }
 
-    private void createClass(String name, FolderNode parent, String packageFragment) {
+    private void createClass(String name, FolderReferenceNode parent, String packageFragment) {
         String content = getPackageQualifier(parent, packageFragment) +
                          "public class " + name + DEFAULT_CONTENT;
 
         createSourceFile(name, parent, packageFragment, content);
     }
 
-    private void createInterface(String name, FolderNode parent, String packageFragment) {
+    private void createInterface(String name, FolderReferenceNode parent, String packageFragment) {
         String content = getPackageQualifier(parent, packageFragment) +
                          "public interface " + name + DEFAULT_CONTENT;
 
         createSourceFile(name, parent, packageFragment, content);
     }
 
-    private void createEnum(String name, FolderNode parent, String packageFragment) {
+    private void createEnum(String name, FolderReferenceNode parent, String packageFragment) {
         String content = getPackageQualifier(parent, packageFragment) +
                          "public enum " + name + DEFAULT_CONTENT;
 
         createSourceFile(name, parent, packageFragment, content);
     }
 
-    private void createAnnotation(String name, FolderNode parent, String packageFragment) {
+    private void createAnnotation(String name, FolderReferenceNode parent, String packageFragment) {
         String content = getPackageQualifier(parent, packageFragment) +
                          "public @interface " + name + DEFAULT_CONTENT;
 
         createSourceFile(name, parent, packageFragment, content);
     }
 
-    private String getPackageQualifier(FolderNode parent, String packageFragment) {
+    private String getPackageQualifier(FolderReferenceNode parent, String packageFragment) {
         String packageFQN = "";
         if (parent instanceof PackageNode) {
-            packageFQN = ((PackageNode)parent).getQualifiedName();
+//            packageFQN = ((PackageNode)parent).getQualifiedName();
         }
         if (!packageFragment.isEmpty()) {
             packageFQN = packageFQN.isEmpty() ? packageFragment : packageFQN + '.' + packageFragment;
@@ -195,12 +217,12 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
         return "\n";
     }
 
-    private void createSourceFile(final String nameWithoutExtension, FolderNode parent, String packageFragment, final String content) {
-        final String parentPath = parent.getPath() + (packageFragment.isEmpty() ? "" : '/' + packageFragment.replace('.', '/'));
+    private void createSourceFile(final String nameWithoutExtension, final FolderReferenceNode parent, String packageFragment, final String content) {
+        final String parentPath = parent.getStorablePath() + (packageFragment.isEmpty() ? "" : '/' + packageFragment.replace('.', '/'));
         ensureFolderExists(parentPath, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                createAndOpenFile(nameWithoutExtension, parentPath, content);
+                createAndOpenFile(nameWithoutExtension, parent, content);
             }
 
             @Override
@@ -229,42 +251,84 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
         });
     }
 
-    private void createAndOpenFile(String nameWithoutExtension, String parentPath, String content) {
+    private void createAndOpenFile(String nameWithoutExtension, FolderReferenceNode parent, String content) {
         final CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
             throw new IllegalStateException("No opened project.");
         }
 
         final String fileName = nameWithoutExtension + ".java";
-        final Unmarshallable<ItemReference> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(ItemReference.class);
-        projectServiceClient.createFile(parentPath, fileName, content, null, new AsyncRequestCallback<ItemReference>(unmarshaller) {
-            @Override
-            protected void onSuccess(ItemReference result) {
-                currentProject.getCurrentTree().getNodeByPath(result.getPath(), new AsyncCallback<TreeNode<?>>() {
-                    @Override
-                    public void onSuccess(TreeNode<?> result) {
-                        if (result != null) {
-//                            eventBus.fireEvent(new ItemEvent((ItemNode)result, CREATED));
-                            eventBus.fireEvent(new FileEvent((VirtualFile)result, OPEN));
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        dialogFactory.createMessageDialog("", caught.getMessage(), null).show();
-                    }
-                });
+        projectServiceClient.createFile(parent.getStorablePath(),
+                                        fileName,
+                                        content,
+                                        null,
+                                        createCallback(parent));
+    }
+
+    protected AsyncRequestCallback<ItemReference> createCallback(final ResourceBasedNode<?> parent) {
+        return new AsyncRequestCallback<ItemReference>(dtoUnmarshallerFactory.newUnmarshaller(ItemReference.class)) {
+            @Override
+            protected void onSuccess(ItemReference itemReference) {
+                getCreatedItem(parent, itemReference);
             }
 
             @Override
             protected void onFailure(Throwable exception) {
-                if (exception instanceof ServerException) {
-                    String message = JsonHelper.parseJsonMessage(exception.getMessage());
-                    dialogFactory.createMessageDialog("", message, null).show();
-                } else {
-                    dialogFactory.createMessageDialog("", exception.getMessage(), null).show();
+                dialogFactory.createMessageDialog("", JsonHelper.parseJsonMessage(exception.getMessage()), null).show();
+            }
+        };
+    }
+
+    protected void getCreatedItem(ResourceBasedNode<?> parent, ItemReference item) {
+        nodeManager.getChildren(((HasStorablePath)parent).getStorablePath(),
+                                parent.getProjectDescriptor(),
+                                parent.getSettings())
+                   .then(iterateAndFindCreatedNode(item))
+                   .then(fireNodeCreated(parent));
+    }
+
+    @Nonnull
+    protected Function<List<Node>, ItemReferenceBasedNode> iterateAndFindCreatedNode(@Nonnull final ItemReference itemReference) {
+        return new Function<List<Node>, ItemReferenceBasedNode>() {
+            @Override
+            public ItemReferenceBasedNode apply(List<Node> nodes) throws FunctionException {
+                if (nodes.isEmpty()) {
+                    return null;
+                }
+
+                for (Node node : nodes) {
+                    if (node instanceof FileReferenceNode && ((FileReferenceNode)node).getData().equals(itemReference)) {
+                        return (FileReferenceNode)node;
+                    }
+                }
+
+                return null;
+            }
+        };
+    }
+
+    @Nonnull
+    private Operation<ItemReferenceBasedNode> fireNodeCreated(@Nonnull final ResourceBasedNode<?> parent) {
+        return new Operation<ItemReferenceBasedNode>() {
+            @Override
+            public void apply(final ItemReferenceBasedNode newItemReferenceNode) throws OperationException {
+                if (newItemReferenceNode == null) {
+                    return;
+                }
+
+                eventBus.fireEvent(new ResourceNodeEvent(parent, newItemReferenceNode, ResourceNodeEvent.Event.CREATED));
+
+                if (newItemReferenceNode instanceof FileReferenceNode) {
+                    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            eventBus.fireEvent(new FileEvent((FileReferenceNode)newItemReferenceNode, OPEN));
+//                            editorAgent.openEditor((FileReferenceNode)newItemReferenceNode);
+                        }
+                    });
                 }
             }
-        });
+        };
     }
 }

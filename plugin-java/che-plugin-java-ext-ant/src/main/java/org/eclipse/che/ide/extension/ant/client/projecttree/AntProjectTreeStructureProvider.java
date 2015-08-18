@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
  *
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 @Singleton
 public class AntProjectTreeStructureProvider implements TreeStructureProvider {
     public final static String ID = "ant";

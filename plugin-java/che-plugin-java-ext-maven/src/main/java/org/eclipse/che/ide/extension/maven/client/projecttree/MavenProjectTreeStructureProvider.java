@@ -24,6 +24,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 
 /** @author Artem Zatsarynnyy */
+@Deprecated
 @Singleton
 public class MavenProjectTreeStructureProvider implements TreeStructureProvider {
     public final static String ID = "maven";

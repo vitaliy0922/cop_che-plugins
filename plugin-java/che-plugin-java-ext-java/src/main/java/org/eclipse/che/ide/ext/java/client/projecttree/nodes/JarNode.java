@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Evgen Vidolob
  */
+@Deprecated
 public class JarNode extends AbstractTreeNode<Jar> {
 
     private JavaTreeStructure      treeStructure;

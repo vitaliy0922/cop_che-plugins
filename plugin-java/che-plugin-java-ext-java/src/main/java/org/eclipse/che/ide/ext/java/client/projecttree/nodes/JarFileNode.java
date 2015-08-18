@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
  * Represent non java file
  * @author Evgen Vidolob
  */
+@Deprecated
 public class JarFileNode extends JarEntryNode implements VirtualFile {
     /**
      * Creates new node with the specified parent, associated data and display name.

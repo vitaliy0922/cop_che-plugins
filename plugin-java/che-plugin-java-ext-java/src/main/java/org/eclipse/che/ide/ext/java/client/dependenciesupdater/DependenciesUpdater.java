@@ -22,17 +22,15 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.build.BuildContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.collections.StringMap;
 import org.eclipse.che.ide.ext.java.client.JavaLocalizationConstant;
 import org.eclipse.che.ide.ext.java.client.editor.JavaParserWorker;
-import org.eclipse.che.ide.ext.java.client.projecttree.JavaTreeStructure;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.ExternalLibrariesNode;
 import org.eclipse.che.ide.extension.builder.client.build.BuildController;
 import org.eclipse.che.ide.extension.builder.client.console.BuilderConsolePresenter;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
@@ -54,7 +52,8 @@ import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
  */
 @Singleton
 public class DependenciesUpdater {
-    private final BuilderConsolePresenter          builderConsole;
+    private final BuilderConsolePresenter builderConsole;
+    private final NewProjectExplorerPresenter projectExplorer;
     private final NotificationManager              notificationManager;
     private final BuildContext                     buildContext;
     private final JavaParserWorker                 parserWorker;
@@ -68,7 +67,6 @@ public class DependenciesUpdater {
 
     private Queue<Pair<ProjectDescriptor, Boolean>> projects = new LinkedList<>();
     private boolean                                 updating = false;
-    private JavaTreeStructure javaTreeStructure;
     private Notification      notification;
 
     @Inject
@@ -82,7 +80,8 @@ public class DependenciesUpdater {
                                EventBus eventBus,
                                AppContext context,
                                JavaNameEnvironmentServiceClient nameEnvironmentServiceClient,
-                               BuilderConsolePresenter builderConsole) {
+                               BuilderConsolePresenter builderConsole,
+                               NewProjectExplorerPresenter projectExplorer) {
         this.javaLocalizationConstant = javaLocalizationConstant;
         this.notificationManager = notificationManager;
         this.buildContext = buildContext;
@@ -94,6 +93,7 @@ public class DependenciesUpdater {
         this.context = context;
         this.nameEnvironmentServiceClient = nameEnvironmentServiceClient;
         this.builderConsole = builderConsole;
+        this.projectExplorer = projectExplorer;
     }
 
     public void updateDependencies(final ProjectDescriptor project, final boolean force) {
@@ -109,10 +109,6 @@ public class DependenciesUpdater {
 
         builderConsole.clear();
 
-        javaTreeStructure = null;
-        if (currentProject.getCurrentTree() instanceof JavaTreeStructure) {
-            javaTreeStructure = (JavaTreeStructure)currentProject.getCurrentTree();
-        }
         notification = new Notification(javaLocalizationConstant.updatingDependencies(), PROGRESS);
         notificationManager.showNotification(notification);
 
@@ -129,7 +125,8 @@ public class DependenciesUpdater {
 
                         if (descriptor.getStatus() == BuildStatus.SUCCESSFUL) {
                             onUpdated();
-                            refreshExtLibs(project);
+                            projectExplorer.synchronizeTree();
+//                            refreshExtLibs(project);
                             return;
                         }
                         buildController.showRunningBuild(descriptor, "[INFO] Updating dependencies...");
@@ -154,7 +151,8 @@ public class DependenciesUpdater {
                 onUpdated();
                 parserWorker.dependenciesUpdated();
                 refreshOpenedEditors();
-                refreshExtLibs(project);
+                projectExplorer.synchronizeTree();
+//                refreshExtLibs(project);
 
                 if (!projects.isEmpty()) {
                     Pair<ProjectDescriptor, Boolean> pair = projects.poll();
@@ -194,12 +192,12 @@ public class DependenciesUpdater {
     }
 
     private void refreshExtLibs(ProjectDescriptor project) {
-        if (javaTreeStructure != null) {
-            ExternalLibrariesNode librariesNode = javaTreeStructure.getExternalLibrariesNode(project.getPath());
-            if (librariesNode != null && librariesNode.isOpened()) {
-                eventBus.fireEvent(new RefreshProjectTreeEvent(librariesNode));
-            }
-        }
+//        if (javaTreeStructure != null) {
+//            ExternalLibrariesNode librariesNode = javaTreeStructure.getExternalLibrariesNode(project.getPath());
+//            if (librariesNode != null && librariesNode.isOpened()) {
+//                eventBus.fireEvent(new RefreshProjectTreeEvent(librariesNode));
+//            }
+//        }
     }
 
     private void updateFinishedWithError(Throwable exception, Notification notification) {

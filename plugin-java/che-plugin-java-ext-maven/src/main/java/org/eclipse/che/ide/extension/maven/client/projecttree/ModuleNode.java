@@ -32,6 +32,7 @@ import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class ModuleNode extends MavenProjectNode {
 
     private final AppContext appContext;

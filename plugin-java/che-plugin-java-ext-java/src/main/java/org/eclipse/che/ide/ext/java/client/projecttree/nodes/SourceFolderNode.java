@@ -25,6 +25,7 @@ import com.google.web.bindery.event.shared.EventBus;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class SourceFolderNode extends AbstractSourceContainerNode {
 
     @Inject

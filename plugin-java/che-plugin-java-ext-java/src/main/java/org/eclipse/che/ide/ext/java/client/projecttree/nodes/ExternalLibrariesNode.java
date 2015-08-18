@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Evgen Vidolob
  */
+@Deprecated
 public class ExternalLibrariesNode extends AbstractTreeNode<Object> implements Openable {
     private JavaTreeStructure      treeStructure;
     private JavaNavigationService  service;

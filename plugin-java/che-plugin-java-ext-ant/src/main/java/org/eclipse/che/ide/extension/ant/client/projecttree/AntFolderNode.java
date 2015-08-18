@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
  *
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 public class AntFolderNode extends JavaFolderNode {
 
     /** Create instance of {@link AntFolderNode}. */

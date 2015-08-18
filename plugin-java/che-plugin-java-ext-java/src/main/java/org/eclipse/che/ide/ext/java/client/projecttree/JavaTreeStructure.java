@@ -50,6 +50,7 @@ import java.util.Map;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class JavaTreeStructure extends GenericTreeStructure {
 
     protected final IconRegistry          iconRegistry;

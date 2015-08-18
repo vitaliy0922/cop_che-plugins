@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
  * @author Artem Zatsarynnyy
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 public class JavaFolderNode extends FolderNode {
 
     @Inject

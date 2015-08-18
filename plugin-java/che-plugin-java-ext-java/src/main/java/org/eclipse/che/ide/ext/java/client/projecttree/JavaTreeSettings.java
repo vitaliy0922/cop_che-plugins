@@ -17,6 +17,7 @@ import org.eclipse.che.ide.api.project.tree.TreeSettings;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class JavaTreeSettings implements TreeSettings {
     private boolean showHiddenItems;
     private boolean showExtensionForJavaFiles;

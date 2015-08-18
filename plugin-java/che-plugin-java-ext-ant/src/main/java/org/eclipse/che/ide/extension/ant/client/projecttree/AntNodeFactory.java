@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
  * @author Artem Zatsarynnyy
  * @see JavaNodeFactory
  */
+@Deprecated
 public interface AntNodeFactory extends JavaNodeFactory {
     /**
      * Creates a new {@link AntFolderNode} owned by the specified {@code treeStructure}

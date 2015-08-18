@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 /**
  * @author Evgen Vidolob
  */
+@Deprecated
 public class JarClassNode extends JarEntryNode implements VirtualFile {
 
     /**

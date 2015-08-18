@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class MavenFolderNode extends JavaFolderNode {
 
     @Inject

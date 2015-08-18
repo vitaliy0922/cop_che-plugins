@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class SourceFileNode extends FileNode {
 
     @Inject

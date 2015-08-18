@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
  *
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 public class AntProjectTreeStructure extends JavaTreeStructure {
 
     /** Create instance of {@link AntProjectTreeStructure}. */

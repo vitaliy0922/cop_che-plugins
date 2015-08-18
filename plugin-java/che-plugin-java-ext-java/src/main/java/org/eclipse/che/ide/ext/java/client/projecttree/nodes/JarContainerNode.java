@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
  * Represents jar package or non java resource
  * @author Evgen Vidolob
  */
+@Deprecated
 public class JarContainerNode extends JarEntryNode {
 
     /**

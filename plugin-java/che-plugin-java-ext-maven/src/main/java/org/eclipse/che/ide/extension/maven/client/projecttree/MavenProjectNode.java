@@ -37,6 +37,7 @@ import java.util.List;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class MavenProjectNode extends JavaProjectNode {
 
     @Inject

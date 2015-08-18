@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
  *
  * @author Vladyslav Zhukovskii
  */
+@Deprecated
 public class AntProjectNode extends JavaProjectNode {
 
     /** Create instance of {@link AntProjectNode}. */

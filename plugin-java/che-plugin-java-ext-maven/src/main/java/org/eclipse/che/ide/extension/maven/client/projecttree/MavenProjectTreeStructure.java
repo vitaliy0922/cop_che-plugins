@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class MavenProjectTreeStructure extends JavaTreeStructure {
 
     protected MavenProjectTreeStructure(MavenNodeFactory nodeFactory, EventBus eventBus, AppContext appContext,

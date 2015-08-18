@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
  * @author Artem Zatsarynnyy
  * @see JavaNodeFactory
  */
+@Deprecated
 public interface MavenNodeFactory extends JavaNodeFactory {
     /**
      * Creates a new {@link MavenProjectNode} owned by the specified {@code treeStructure}

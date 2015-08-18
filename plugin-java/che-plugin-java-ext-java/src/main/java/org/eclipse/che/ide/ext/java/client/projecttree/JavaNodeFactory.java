@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
  * @author Artem Zatsarynnyy
  * @see NodeFactory
  */
+@Deprecated
 public interface JavaNodeFactory extends NodeFactory {
     /**
      * Creates a new {@link org.eclipse.che.ide.ext.java.client.projecttree.nodes.JavaProjectNode} owned by the specified {@code treeStructure}

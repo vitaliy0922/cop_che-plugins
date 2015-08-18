@@ -32,6 +32,7 @@ import static org.eclipse.che.ide.ext.java.client.projecttree.JavaSourceFolderUt
  *
  * @author Artem Zatsarynnyy
  */
+@Deprecated
 public class PackageNode extends AbstractSourceContainerNode {
 
     @Inject

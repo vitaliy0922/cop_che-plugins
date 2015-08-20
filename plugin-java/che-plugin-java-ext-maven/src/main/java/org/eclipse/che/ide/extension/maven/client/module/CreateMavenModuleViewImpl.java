@@ -10,13 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.extension.maven.client.module;
 
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.collections.Collections;
-import org.eclipse.che.ide.extension.maven.client.MavenArchetype;
-import org.eclipse.che.ide.projecttype.wizard.ProjectWizardResources;
-
-import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
-import org.eclipse.che.ide.ui.window.Window;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -34,6 +27,14 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.eclipse.che.ide.extension.maven.client.MavenArchetype;
+import org.eclipse.che.ide.projecttype.wizard.ProjectWizardResources;
+import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
+import org.eclipse.che.ide.ui.window.Window;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Evgen Vidolob
@@ -65,7 +66,7 @@ public class CreateMavenModuleViewImpl extends Window implements CreateMavenModu
     ListBox                        packagingField;
     @UiField(provided = true)
     CreateMavenModuleResources.Css styles;
-    private Array<MavenArchetype> archetypes;
+    private List<MavenArchetype> archetypes;
     private ActionDelegate        delegate;
 
     @Inject
@@ -74,7 +75,7 @@ public class CreateMavenModuleViewImpl extends Window implements CreateMavenModu
         super(true);
         styles = resources.css();
         styles.ensureInjected();
-        archetypes = Collections.createArray();
+        archetypes = new ArrayList<>();
         setTitle("Create Maven Module");
         FlowPanel rootElement = ourUiBinder.createAndBindUi(this);
         setWidget(rootElement);
@@ -127,7 +128,7 @@ public class CreateMavenModuleViewImpl extends Window implements CreateMavenModu
     @Override
     public MavenArchetype getArchetype() {
         final String coordinates = archetypeField.getValue(archetypeField.getSelectedIndex());
-        for (MavenArchetype archetype : archetypes.asIterable()) {
+        for (MavenArchetype archetype : archetypes) {
             if (coordinates.equals(archetype.toString())) {
                 return archetype;
             }
@@ -136,11 +137,11 @@ public class CreateMavenModuleViewImpl extends Window implements CreateMavenModu
     }
 
     @Override
-    public void setArchetypes(Array<MavenArchetype> archetypes) {
+    public void setArchetypes(List<MavenArchetype> archetypes) {
         this.archetypes.clear();
         this.archetypes.addAll(archetypes);
         archetypeField.clear();
-        for (MavenArchetype archetype : archetypes.asIterable()) {
+        for (MavenArchetype archetype : archetypes) {
             archetypeField.addItem(archetype.toString(), archetype.toString());
         }
     }

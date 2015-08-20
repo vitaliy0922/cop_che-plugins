@@ -31,6 +31,7 @@ import org.eclipse.che.ide.ext.java.shared.JarEntry;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.StringUnmarshaller;
 import org.eclipse.che.ide.ui.smartTree.presentation.NodePresentation;
+import org.eclipse.che.ide.util.Pair;
 import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
@@ -73,6 +74,8 @@ public class JarFileNode extends AbstractJarEntryNode implements VirtualFile, Ha
         presentation.setPresentableText(getDisplayName());
         presentation.setPresentableIcon(isClassFile() ? nodeManager.getJavaNodesResources().javaClassIcon()
                                        : (SVGResource)getFileIcon().getElement());
+        presentation.setInfoText("r/o");
+        presentation.setInfoTextWrapper(Pair.of("(", ")"));
     }
 
     @Nonnull

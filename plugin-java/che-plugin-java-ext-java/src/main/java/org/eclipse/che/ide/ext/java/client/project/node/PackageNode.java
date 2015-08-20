@@ -23,16 +23,12 @@ import org.eclipse.che.api.promises.client.callback.AsyncPromiseHelper;
 import org.eclipse.che.api.promises.client.js.Promises;
 import org.eclipse.che.ide.api.project.node.HasStorablePath;
 import org.eclipse.che.ide.api.project.node.Node;
-import org.eclipse.che.ide.api.project.node.settings.NodeSettings;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.ext.java.client.project.settings.JavaNodeSettings;
-import org.eclipse.che.ide.project.node.AbstractProjectBasedNode;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
 import org.eclipse.che.ide.project.node.ItemReferenceChainFilter;
-import org.eclipse.che.ide.project.node.NodeManager;
 import org.eclipse.che.ide.project.node.resource.ItemReferenceProcessor;
 import org.eclipse.che.ide.ui.smartTree.presentation.NodePresentation;
-import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -113,12 +109,11 @@ public class PackageNode extends FolderReferenceNode {
 
     @Override
     public void updatePresentation(@Nonnull NodePresentation presentation) {
-
-        presentation.setPresentableText(getFqnName());
+        presentation.setPresentableText(getDisplayFqn());
         presentation.setPresentableIcon(nodeManager.getJavaNodesResources().packageFolder());
     }
 
-    private String getFqnName() {
+    private String getDisplayFqn() {
         Node parent = getParent();
 
         if (parent != null && parent instanceof HasStorablePath) {

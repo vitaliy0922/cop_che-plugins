@@ -237,4 +237,7 @@ public interface JavaResources extends ClientBundle {
 
     @Source("svg/fileJava.svg")
     SVGResource fileJava();
+
+    @Source("svg/resourceFolder.svg")
+    SVGResource resourceFolder();
 }

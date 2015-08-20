@@ -74,6 +74,11 @@ public abstract class AbstractJavaContentRootInterceptor implements NodeIntercep
             return ContentRoot.TEST_SOURCE;
         }
 
+        String resourceFolder = _getSourceFolder(descriptor, getResourceFolderAttribute());
+        if (folderNode.getStorablePath().equals(resourceFolder)) {
+            return ContentRoot.RESOURCE;
+        }
+
         return null;
     }
 
@@ -90,6 +95,8 @@ public abstract class AbstractJavaContentRootInterceptor implements NodeIntercep
 
     public abstract String getTestSrcFolderAttribute();
 
+    public abstract String getResourceFolderAttribute();
+
     private void setupIcon(FolderReferenceNode srcFolder, ContentRoot srcType) {
         switch (srcType) {
             case SOURCE:
@@ -98,6 +105,8 @@ public abstract class AbstractJavaContentRootInterceptor implements NodeIntercep
             case TEST_SOURCE:
                 srcFolder.getPresentation(true).setPresentableIcon(javaResourceNodeManager.getJavaNodesResources().testSrcFolder());
                 break;
+            case RESOURCE:
+                srcFolder.getPresentation(true).setPresentableIcon(javaResourceNodeManager.getJavaNodesResources().resourceFolder());
             default:
                 throw new IllegalArgumentException("Wrong source type");
         }

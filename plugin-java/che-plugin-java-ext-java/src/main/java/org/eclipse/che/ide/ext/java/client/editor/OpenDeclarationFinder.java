@@ -10,17 +10,16 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.editor;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
-import org.eclipse.che.ide.api.project.tree.TreeNode;
-import org.eclipse.che.ide.api.project.tree.TreeStructure;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
-import org.eclipse.che.ide.api.project.tree.generic.ProjectNode;
 import org.eclipse.che.ide.collections.StringMap;
 import org.eclipse.che.ide.ext.java.client.navigation.JavaNavigationService;
-import org.eclipse.che.ide.ext.java.client.projecttree.JavaTreeStructure;
 import org.eclipse.che.ide.ext.java.messages.JavadocHandleComputed;
 import org.eclipse.che.ide.ext.java.shared.OpenDeclarationDescriptor;
 import org.eclipse.che.ide.jseditor.client.text.LinearRange;
@@ -29,9 +28,6 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.util.loging.Log;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * @author Evgen Vidolob
@@ -118,41 +114,41 @@ public class OpenDeclarationFinder {
             }
         }
 
-
-        TreeStructure tree = context.getCurrentProject().getCurrentTree();
-        if (descriptor.isBinary()) {
-            if (tree instanceof JavaTreeStructure) {
-                ((JavaTreeStructure)tree)
-                        .getClassFileByPath(context.getCurrentProject().getProjectDescription().getPath(), descriptor.getLibId(),
-                                            descriptor.getPath(), new AsyncCallback<TreeNode<?>>() {
-                            @Override
-                            public void onFailure(Throwable caught) {
-                                Log.error(OpenDeclarationFinder.class, caught);
-                            }
-
-                            @Override
-                            public void onSuccess(TreeNode<?> result) {
-                                if (result instanceof VirtualFile) {
-                                    openFile((VirtualFile)result, descriptor);
-                                }
-                            }
-                        });
-            }
-        } else {
-            tree.getNodeByPath(descriptor.getPath(), new AsyncCallback<TreeNode<?>>() {
-                @Override
-                public void onFailure(Throwable caught) {
-                    Log.error(OpenDeclarationFinder.class, caught);
-                }
-
-                @Override
-                public void onSuccess(TreeNode<?> result) {
-                    if (result instanceof VirtualFile) {
-                        openFile((VirtualFile)result, descriptor);
-                    }
-                }
-            });
-        }
+        //TODO temporary removed
+//        TreeStructure tree = context.getCurrentProject().getCurrentTree();
+//        if (descriptor.isBinary()) {
+//            if (tree instanceof JavaTreeStructure) {
+//                ((JavaTreeStructure)tree)
+//                        .getClassFileByPath(context.getCurrentProject().getProjectDescription().getPath(), descriptor.getLibId(),
+//                                            descriptor.getPath(), new AsyncCallback<TreeNode<?>>() {
+//                            @Override
+//                            public void onFailure(Throwable caught) {
+//                                Log.error(OpenDeclarationFinder.class, caught);
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(TreeNode<?> result) {
+//                                if (result instanceof VirtualFile) {
+//                                    openFile((VirtualFile)result, descriptor);
+//                                }
+//                            }
+//                        });
+//            }
+//        } else {
+//            tree.getNodeByPath(descriptor.getPath(), new AsyncCallback<TreeNode<?>>() {
+//                @Override
+//                public void onFailure(Throwable caught) {
+//                    Log.error(OpenDeclarationFinder.class, caught);
+//                }
+//
+//                @Override
+//                public void onSuccess(TreeNode<?> result) {
+//                    if (result instanceof VirtualFile) {
+//                        openFile((VirtualFile)result, descriptor);
+//                    }
+//                }
+//            });
+//        }
     }
 
     private void openFile(VirtualFile result, final OpenDeclarationDescriptor descriptor) {

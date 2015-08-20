@@ -10,20 +10,18 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.editor;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.PropertyListener;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.collections.StringMap;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.PackageNode;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.SourceFileNode;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
 import org.eclipse.che.ide.project.event.ResourceNodeEvent;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.web.bindery.event.shared.EventBus;
 
 /**
  * @author Evgen Vidolob
@@ -100,11 +98,11 @@ public class FileWatcher {
 
     private String getFQN(VirtualFile file) {
         String packageName = "";
-        if(file instanceof SourceFileNode) {
-            if (((SourceFileNode)file).getParent() instanceof PackageNode) {
-                packageName = ((PackageNode)((SourceFileNode)file).getParent()).getQualifiedName() + '.';
-            }
-        }
+//        if(file instanceof SourceFileNode) {
+//            if (((SourceFileNode)file).getParent() instanceof PackageNode) {
+//                packageName = ((PackageNode)((SourceFileNode)file).getParent()).getQualifiedName() + '.';
+//            }
+//        }
         return packageName + file.getName().substring(0, file.getName().indexOf('.'));
     }
 

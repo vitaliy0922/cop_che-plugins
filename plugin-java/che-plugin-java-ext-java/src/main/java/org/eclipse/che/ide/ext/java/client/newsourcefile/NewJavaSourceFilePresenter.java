@@ -33,6 +33,7 @@ import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.collections.Collections;
 import org.eclipse.che.ide.commons.exception.ServerException;
+import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
 import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
 import org.eclipse.che.ide.json.JsonHelper;
 import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
@@ -78,14 +79,14 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
     private final DialogFactory               dialogFactory;
     private final Array<JavaSourceFileType>   sourceFileTypes;
     private final AppContext                  appContext;
-    private final NodeManager                 nodeManager;
+    private final JavaNodeManager                 nodeManager;
 
     @Inject
     public NewJavaSourceFilePresenter(NewJavaSourceFileView view, NewProjectExplorerPresenter projectExplorer,
                                       ProjectServiceClient projectServiceClient,
                                       DtoUnmarshallerFactory dtoUnmarshallerFactory, EventBus eventBus, DialogFactory dialogFactory,
                                       AppContext appContext,
-                                      NodeManager nodeManager) {
+                                      JavaNodeManager nodeManager) {
         this.appContext = appContext;
         this.nodeManager = nodeManager;
         sourceFileTypes = Collections.createArray(CLASS, INTERFACE, ENUM, ANNOTATION);
@@ -317,6 +318,11 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
                     return;
                 }
 
+                if (newItemReferenceNode.getName().endsWith(".java")) {
+                    newItemReferenceNode.getPresentation(false).setPresentableText(newItemReferenceNode.getName().replace(".java", ""));
+                    newItemReferenceNode.getPresentation(false).setPresentableIcon(nodeManager.getJavaNodesResources().fileJava());
+                }
+
                 eventBus.fireEvent(new ResourceNodeEvent(parent, newItemReferenceNode, ResourceNodeEvent.Event.CREATED));
 
                 if (newItemReferenceNode instanceof FileReferenceNode) {
@@ -324,7 +330,6 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
                         @Override
                         public void execute() {
                             eventBus.fireEvent(new FileEvent((FileReferenceNode)newItemReferenceNode, OPEN));
-//                            editorAgent.openEditor((FileReferenceNode)newItemReferenceNode);
                         }
                     });
                 }

@@ -33,7 +33,7 @@ import org.eclipse.che.ide.api.filetypes.FileTypeRegistry;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.parts.PropertyListener;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
-import org.eclipse.che.ide.api.project.tree.generic.FileNode;
+import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.api.texteditor.HandlesUndoRedo;
 import org.eclipse.che.ide.api.texteditor.UndoableEditor;
 import org.eclipse.che.ide.collections.Array;
@@ -284,7 +284,7 @@ public class PropertiesEnvironmentPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(editor.getEditorInput()).thenReturn(editorInput);
         when(editorInput.getFile()).thenReturn(file);
-        when(fileTypeRegistry.getFileTypeByFile(any(FileNode.class))).thenReturn(fileType);
+        when(fileTypeRegistry.getFileTypeByFile(any(VirtualFile.class))).thenReturn(fileType);
 
         when(locale.runnerTabTemplates()).thenReturn(TEXT);
 

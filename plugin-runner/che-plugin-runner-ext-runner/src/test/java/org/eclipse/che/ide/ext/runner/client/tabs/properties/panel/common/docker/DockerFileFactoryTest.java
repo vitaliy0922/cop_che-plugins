@@ -10,17 +10,17 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker;
 
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
-import org.eclipse.che.ide.api.project.tree.generic.FileNode;
+import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
-import com.google.web.bindery.event.shared.EventBus;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,7 +106,7 @@ public class DockerFileFactoryTest {
     public void dockerFileShouldBeCreated() throws Exception {
         when(currentProject.getCurrentTree()).thenReturn(treeStructure);
 
-        FileNode fileNode = factory.newInstance(SOME_TEXT);
+        VirtualFile fileNode = factory.newInstance(SOME_TEXT);
 
         verify(dtoFactory).createDto(Link.class);
         verify(link).withHref(SOME_TEXT);

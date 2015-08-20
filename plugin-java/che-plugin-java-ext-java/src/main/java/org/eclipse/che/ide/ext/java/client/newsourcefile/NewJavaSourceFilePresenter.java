@@ -30,8 +30,7 @@ import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.collections.Collections;
+
 import org.eclipse.che.ide.commons.exception.ServerException;
 import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
 import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
@@ -48,6 +47,9 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -80,6 +82,14 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
     private final Array<JavaSourceFileType>   sourceFileTypes;
     private final AppContext                  appContext;
     private final JavaNodeManager                 nodeManager;
+    private final NewJavaSourceFileView    view;
+    private final SelectionAgent           selectionAgent;
+    private final ProjectServiceClient     projectServiceClient;
+    private final DtoUnmarshallerFactory   dtoUnmarshallerFactory;
+    private final EventBus                 eventBus;
+    private final DialogFactory            dialogFactory;
+    private final List<JavaSourceFileType> sourceFileTypes;
+    private final AppContext               appContext;
 
     @Inject
     public NewJavaSourceFilePresenter(NewJavaSourceFileView view, NewProjectExplorerPresenter projectExplorer,
@@ -88,9 +98,9 @@ public class NewJavaSourceFilePresenter implements NewJavaSourceFileView.ActionD
                                       AppContext appContext,
                                       JavaNodeManager nodeManager) {
         this.appContext = appContext;
-        this.nodeManager = nodeManager;
-        sourceFileTypes = Collections.createArray(CLASS, INTERFACE, ENUM, ANNOTATION);
+        sourceFileTypes = Arrays.asList(CLASS, INTERFACE, ENUM, ANNOTATION);
         this.view = view;
+        this.nodeManager = nodeManager;
         this.projectExplorer = projectExplorer;
         this.projectServiceClient = projectServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;

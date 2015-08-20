@@ -24,7 +24,6 @@ import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
-import org.eclipse.che.ide.collections.StringMap;
 import org.eclipse.che.ide.ext.java.client.JavaLocalizationConstant;
 import org.eclipse.che.ide.ext.java.client.editor.JavaParserWorker;
 import org.eclipse.che.ide.extension.builder.client.build.BuildController;
@@ -38,6 +37,7 @@ import org.eclipse.che.ide.util.Pair;
 import org.eclipse.che.ide.util.loging.Log;
 
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
@@ -180,15 +180,13 @@ public class DependenciesUpdater {
     }
 
     private void refreshOpenedEditors() {
-        editorAgent.getOpenedEditors().iterate(new StringMap.IterationCallback<EditorPartPresenter>() {
-            @Override
-            public void onIteration(String s, EditorPartPresenter editorPartPresenter) {
-                if (editorPartPresenter instanceof EmbeddedTextEditorPresenter) {
-                    final EmbeddedTextEditorPresenter<?> editor = (EmbeddedTextEditorPresenter<?>)editorPartPresenter;
-                    editor.refreshEditor();
-                }
+        Map<String, EditorPartPresenter> openedEditors = editorAgent.getOpenedEditors();
+        for(EditorPartPresenter editorPartPresenter: openedEditors.values()) {
+            if (editorPartPresenter instanceof EmbeddedTextEditorPresenter) {
+                final EmbeddedTextEditorPresenter<?> editor = (EmbeddedTextEditorPresenter<?>)editorPartPresenter;
+                editor.refreshEditor();
             }
-        });
+        }
     }
 
     private void refreshExtLibs(ProjectDescriptor project) {

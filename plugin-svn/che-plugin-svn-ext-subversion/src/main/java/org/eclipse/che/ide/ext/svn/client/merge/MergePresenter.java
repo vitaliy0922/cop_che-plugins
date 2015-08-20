@@ -22,8 +22,6 @@ import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.collections.Collections;
 import org.eclipse.che.ide.ext.svn.client.SubversionClientService;
 import org.eclipse.che.ide.ext.svn.client.common.RawOutputPresenter;
 import org.eclipse.che.ide.ext.svn.client.common.SubversionActionPresenter;
@@ -39,7 +37,10 @@ import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Manages merging the branches and folders.
@@ -131,7 +132,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
                                         sourceURL = result.getItems().get(0).getURL();
                                         SubversionTreeNode subversionTreeNode = new SubversionTreeNode(result.getItems().get(0));
 
-                                        Array<TreeNode<?>> children = Collections.createArray();
+                                        List<TreeNode<?>> children = new ArrayList<>();
                                         if (result.getItems().size() > 1) {
                                             for (int i = 1; i < result.getItems().size(); i++) {
                                                 SubversionItem item = result.getItems().get(i);
@@ -139,7 +140,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
                                                     children.add(new SubversionTreeNode(item));
                                                 }
                                             }
-                                            children.sort(svnDirectoryComparator);
+                                            Collections.sort(children, svnDirectoryComparator);
                                         }
 
                                         subversionTreeNode.setChildren(children);
@@ -242,8 +243,8 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
     /** {@inheritDoc} */
     @Override
     public void onNodeExpanded(TreeNode<?> node) {
-        Array<TreeNode<?>> children = node.getChildren();
-        for (TreeNode<?> childNode : children.asIterable()) {
+        List<TreeNode<?>> children = node.getChildren();
+        for (TreeNode<?> childNode : children) {
             if (childNode.getChildren() == null && childNode instanceof SubversionTreeNode) {
 
                 final SubversionTreeNode subversionTreeNode = (SubversionTreeNode)childNode;
@@ -258,7 +259,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
                                     return;
                                 }
 
-                                Array<TreeNode<?>> children = Collections.createArray();
+                                List<TreeNode<?>> children = new ArrayList<>();
                                 if (result.getItems().size() > 1) {
                                     for (int i = 1; i < result.getItems().size(); i++) {
                                         SubversionItem item = result.getItems().get(i);
@@ -266,7 +267,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
                                             children.add(new SubversionTreeNode(item));
                                         }
                                     }
-                                    children.sort(svnDirectoryComparator);
+                                    Collections.sort(children, svnDirectoryComparator);
                                 }
 
                                 subversionTreeNode.setChildren(children);
@@ -302,7 +303,7 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
 
         private TreeNode<?> parent;
 
-        private Array<TreeNode<?>> children;
+        private List<TreeNode<?>> children;
 
         public SubversionTreeNode(SubversionItem data) {
             this.data = data;
@@ -392,12 +393,12 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
 
         @Nonnull
         @Override
-        public Array<TreeNode<?>> getChildren() {
+        public List<TreeNode<?>> getChildren() {
             return children;
         }
 
         @Override
-        public void setChildren(Array<TreeNode<?>> children) {
+        public void setChildren(List<TreeNode<?>> children) {
             this.children = children;
         }
 

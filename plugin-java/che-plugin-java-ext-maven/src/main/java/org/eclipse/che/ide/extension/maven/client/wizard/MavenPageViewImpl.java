@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.extension.maven.client.wizard;
 
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.collections.Collections;
 import org.eclipse.che.ide.extension.maven.client.MavenArchetype;
 
 import com.google.gwt.core.client.GWT;

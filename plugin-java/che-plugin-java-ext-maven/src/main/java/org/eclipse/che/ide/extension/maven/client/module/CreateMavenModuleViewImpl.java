@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.extension.maven.client.module;
 
+import org.eclipse.che.ide.extension.maven.client.MavenArchetype;
+import org.eclipse.che.ide.projecttype.wizard.ProjectWizardResources;
+
+import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
+import org.eclipse.che.ide.ui.window.Window;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -27,6 +32,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.che.ide.extension.maven.client.MavenArchetype;
 import org.eclipse.che.ide.projecttype.wizard.ProjectWizardResources;

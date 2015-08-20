@@ -16,6 +16,8 @@ import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -48,4 +50,4 @@ public class ExportPresenterTest extends BaseSubversionPresenterTest {
 
         verify(exportView).onShow();
     }
- }
+}

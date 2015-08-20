@@ -8,24 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.eclipse.che.ide.extension.machine.client.command.valueproviders;
-
-import javax.annotation.Nonnull;
+package org.eclipse.che.ide.extension.machine.client.machine.extserver;
 
 /**
- * Provides a value of some variable that may be used in commands.
- * <p/>
- * Actual value will be substituted before sending command for execution to the server.
+ * Describes state of a extension server
  *
- * @author Artem Zatsarynnyy
+ * @author Roman Nikitenko.
  */
-public interface CommandValueProvider {
-
-    /** Get key. Key should be like $(key.name). */
-    @Nonnull
-    String getKey();
-
-    /** Get value. */
-    @Nonnull
-    String getValue();
+public enum ExtServerState {
+    STARTED, STOPPED
 }

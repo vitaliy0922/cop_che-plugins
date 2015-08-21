@@ -14,7 +14,6 @@ import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.api.git.gwt.client.GitServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.commons.exception.ExceptionThrownEvent;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -68,7 +67,6 @@ public class DeleteRepositoryPresenter {
 
                 notificationManager.showInfo(constant.deleteGitRepositorySuccess());
                 //it's need for hide .git in project tree
-                eventBus.fireEvent(new RefreshProjectTreeEvent());
             }
 
             @Override

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.git.client.remove;
 
+import org.eclipse.che.ide.api.project.node.HasStorablePath;
 import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.api.git.gwt.client.GitServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -17,7 +18,6 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.event.FileEvent;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
@@ -26,6 +26,9 @@ import org.eclipse.che.ide.api.project.tree.generic.FolderNode;
 import org.eclipse.che.ide.api.project.tree.generic.StorableNode;
 import org.eclipse.che.ide.api.selection.Selection;
 import org.eclipse.che.ide.api.selection.SelectionAgent;
+import org.eclipse.che.ide.project.node.FileReferenceNode;
+import org.eclipse.che.ide.project.node.FolderReferenceNode;
+import org.eclipse.che.ide.project.node.ResourceBasedNode;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 
 import com.google.inject.Inject;
@@ -101,13 +104,13 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
      */
     @Nonnull
     private String formMessage(@Nonnull String workDir) {
-        Selection<StorableNode> selection = (Selection<StorableNode>)selectionAgent.getSelection();
+        Selection<ResourceBasedNode<?>> selection = (Selection<ResourceBasedNode<?>>)selectionAgent.getSelection();
 
         String path;
         if (selection == null || selection.getHeadElement() == null) {
             path = project.getRootProject().getPath();
         } else {
-            path = selection.getHeadElement().getPath();
+            path = ((HasStorablePath)selection.getHeadElement()).getStorablePath();
         }
 
         String pattern = path.replaceFirst(workDir, "");
@@ -123,7 +126,7 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
             pattern = pattern.substring(0, 40) + "...";
         }
 
-        if (selection != null && selection.getHeadElement() instanceof FolderNode) {
+        if (selection != null && selection.getHeadElement() instanceof FolderReferenceNode) {
             return constant.removeFromIndexFolder(pattern).asString();
         } else {
             return constant.removeFromIndexFile(pattern).asString();
@@ -133,7 +136,7 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onRemoveClicked() {
-        final Selection<StorableNode> selection = (Selection<StorableNode>)selectionAgent.getSelection();
+        final Selection<ResourceBasedNode<?>> selection = (Selection<ResourceBasedNode<?>>)selectionAgent.getSelection();
         openedEditors = new ArrayList<>();
         for (EditorPartPresenter partPresenter : editorAgent.getOpenedEditors().values()) {
             openedEditors.add(partPresenter);
@@ -160,9 +163,9 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
         view.close();
     }
 
-    private void refreshProject(Selection<StorableNode> selection) {
-        if (selection.getHeadElement() instanceof FileNode) {
-            FileNode selectFile = ((FileNode)selection.getHeadElement());
+    private void refreshProject(Selection<ResourceBasedNode<?>> selection) {
+        if (selection.getHeadElement() instanceof FileReferenceNode) {
+            FileReferenceNode selectFile = ((FileReferenceNode)selection.getHeadElement());
             for (EditorPartPresenter partPresenter : openedEditors) {
                 VirtualFile openFile = partPresenter.getEditorInput().getFile();
                 //to close selected file if it open
@@ -171,7 +174,7 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
                 }
             }
         }
-        eventBus.fireEvent(new RefreshProjectTreeEvent());
+//        eventBus.fireEvent(new RefreshProjectTreeEvent());
     }
 
     /**
@@ -181,12 +184,12 @@ public class RemoveFromIndexPresenter implements RemoveFromIndexView.ActionDeleg
      */
     @Nonnull
     private List<String> getFilePatterns() {
-        Selection<StorableNode> selection = (Selection<StorableNode>)selectionAgent.getSelection();
+        Selection<ResourceBasedNode<?>> selection = (Selection<ResourceBasedNode<?>>)selectionAgent.getSelection();
         String path;
         if (selection == null || selection.getHeadElement() == null) {
             path = project.getRootProject().getPath();
         } else {
-            path = selection.getHeadElement().getPath();
+            path = ((HasStorablePath)selection.getHeadElement()).getStorablePath();
         }
 
         String pattern = path.replaceFirst(project.getRootProject().getPath(), "");

@@ -13,7 +13,6 @@ package org.eclipse.che.ide.ext.git.client.init;
 import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.git.client.GitRepositoryInitializer;
 import org.eclipse.che.ide.util.loging.Log;
@@ -69,7 +68,6 @@ public class InitRepositoryPresenter {
             public void onSuccess(Void result) {
                 notificationManager.showInfo(constant.initSuccess());
                 //it's need for show .git in project tree
-                eventBus.fireEvent(new RefreshProjectTreeEvent());
             }
         });
     }

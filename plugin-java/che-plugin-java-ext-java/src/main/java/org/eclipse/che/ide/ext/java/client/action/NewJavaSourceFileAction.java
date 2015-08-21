@@ -58,15 +58,21 @@ public class NewJavaSourceFileAction extends ProjectAction {
 
     @Override
     public void updateProjectAction(ActionEvent e) {
+        Selection<?> selection = projectExplorer.getSelection();
 
-        List<?> selection = projectExplorer.getSelection().getAllElements();
-
-        if (selection == null || selection.isEmpty() || selection.size() > 1) {
+        if (selection == null) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
 
-        Object o = selection.get(0);
+        List<?> elements = selection.getAllElements();
+
+        if (elements == null || elements.isEmpty() || elements.size() > 1) {
+            e.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
+
+        Object o = elements.get(0);
 
         e.getPresentation().setEnabledAndVisible(isSourceFolder(o) || o instanceof PackageNode);
     }

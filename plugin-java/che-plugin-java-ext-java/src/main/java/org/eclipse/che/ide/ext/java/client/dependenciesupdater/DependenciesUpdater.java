@@ -26,6 +26,7 @@ import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.java.client.JavaLocalizationConstant;
 import org.eclipse.che.ide.ext.java.client.editor.JavaParserWorker;
+import org.eclipse.che.ide.ext.java.client.project.node.jar.ExternalLibrariesNode;
 import org.eclipse.che.ide.extension.builder.client.build.BuildController;
 import org.eclipse.che.ide.extension.builder.client.console.BuilderConsolePresenter;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
@@ -125,8 +126,7 @@ public class DependenciesUpdater {
 
                         if (descriptor.getStatus() == BuildStatus.SUCCESSFUL) {
                             onUpdated();
-                            projectExplorer.synchronizeTree();
-//                            refreshExtLibs(project);
+                            projectExplorer.reloadChildrenByType(ExternalLibrariesNode.class);
                             return;
                         }
                         buildController.showRunningBuild(descriptor, "[INFO] Updating dependencies...");
@@ -151,8 +151,8 @@ public class DependenciesUpdater {
                 onUpdated();
                 parserWorker.dependenciesUpdated();
                 refreshOpenedEditors();
-                projectExplorer.synchronizeTree();
-//                refreshExtLibs(project);
+
+                projectExplorer.reloadChildrenByType(ExternalLibrariesNode.class);
 
                 if (!projects.isEmpty()) {
                     Pair<ProjectDescriptor, Boolean> pair = projects.poll();

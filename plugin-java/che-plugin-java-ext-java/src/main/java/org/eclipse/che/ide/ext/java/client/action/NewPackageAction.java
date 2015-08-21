@@ -20,14 +20,17 @@ import org.eclipse.che.api.promises.client.Operation;
 import org.eclipse.che.api.promises.client.OperationException;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.project.node.Node;
+import org.eclipse.che.ide.api.selection.Selection;
 import org.eclipse.che.ide.ext.java.client.JavaLocalizationConstant;
 import org.eclipse.che.ide.ext.java.client.JavaResources;
 import org.eclipse.che.ide.ext.java.client.JavaUtils;
 import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
+import org.eclipse.che.ide.json.JsonHelper;
 import org.eclipse.che.ide.newresource.AbstractNewResourceAction;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
 import org.eclipse.che.ide.project.node.ItemReferenceBasedNode;
 import org.eclipse.che.ide.project.node.ResourceBasedNode;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.ui.dialogs.InputCallback;
 import org.eclipse.che.ide.ui.dialogs.input.InputDialog;
 import org.eclipse.che.ide.ui.dialogs.input.InputValidator;
@@ -78,15 +81,48 @@ public class NewPackageAction extends AbstractNewResourceAction {
     }
 
     @Override
-    public void updateProjectAction(ActionEvent e) {
-        List<?> selection = projectExplorer.getSelection().getAllElements();
+    protected AsyncRequestCallback<ItemReference> createCallback(final ResourceBasedNode<?> parent) {
+        return new AsyncRequestCallback<ItemReference>(dtoUnmarshallerFactory.newUnmarshaller(ItemReference.class)) {
+            @Override
+            protected void onSuccess(final ItemReference itemReference) {
+                parent.getChildren(false).then(new Operation<List<Node>>() {
+                    @Override
+                    public void apply(List<Node> cachedChildren) throws OperationException {
+                        if (cachedChildren.size() == 1 && cachedChildren.get(0) instanceof PackageNode) {
+                            projectExplorer.reloadChildren(parent.getParent(), itemReference);
+                        } else {
+                            projectExplorer.reloadChildren(parent, itemReference);
+                        }
+                    }
+                });
 
-        if (selection == null || selection.isEmpty() || selection.size() > 1) {
+
+            }
+
+            @Override
+            protected void onFailure(Throwable exception) {
+                dialogFactory.createMessageDialog("", JsonHelper.parseJsonMessage(exception.getMessage()), null).show();
+            }
+        };
+    }
+
+    @Override
+    public void updateProjectAction(ActionEvent e) {
+        Selection<?> selection = projectExplorer.getSelection();
+
+        if (selection == null) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
 
-        Object o = selection.get(0);
+        List<?> elements = selection.getAllElements();
+
+        if (elements == null || elements.isEmpty() || elements.size() > 1) {
+            e.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
+
+        Object o = elements.get(0);
 
         e.getPresentation().setEnabledAndVisible(isSourceFolder(o) || o instanceof PackageNode);
     }

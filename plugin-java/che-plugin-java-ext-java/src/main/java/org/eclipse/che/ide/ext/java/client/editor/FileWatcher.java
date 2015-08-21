@@ -19,10 +19,10 @@ import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.PropertyListener;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.PackageNode;
-import org.eclipse.che.ide.ext.java.client.projecttree.nodes.SourceFileNode;
+import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
-import org.eclipse.che.ide.project.event.ResourceNodeEvent;
+import org.eclipse.che.ide.project.event.ResourceNodeDeletedEvent;
+import org.eclipse.che.ide.project.node.FileReferenceNode;
 
 import java.util.Map;
 
@@ -41,10 +41,10 @@ public class FileWatcher {
     @Inject
     private void handleFileOperations(EventBus eventBus) {
 
-        eventBus.addHandler(ResourceNodeEvent.getType(), new ResourceNodeEvent.ResourceNodeHandler() {
+        eventBus.addHandler(ResourceNodeDeletedEvent.getType(), new ResourceNodeDeletedEvent.ResourceNodeDeletedHandler() {
             @Override
-            public void onResourceEvent(ResourceNodeEvent event) {
-                if (event.getEvent() == ResourceNodeEvent.Event.DELETED) {
+            public void onResourceEvent(ResourceNodeDeletedEvent event) {
+//                if (event.getEvent() == ResourceNodeDeletedEvent.Event.DELETED) {
 //                    if (event.getItem() instanceof SourceFileNode) {
 //                        String fqn = getFQN(((SourceFileNode)event.getItem()));
 //                        worker.removeFqnFromCache(fqn);
@@ -53,7 +53,7 @@ public class FileWatcher {
 //                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
 //                        reparseAllOpenedFiles();
 //                    }
-                }
+//                }
             }
         });
 
@@ -101,11 +101,15 @@ public class FileWatcher {
 
     private String getFQN(VirtualFile file) {
         String packageName = "";
-//        if(file instanceof SourceFileNode) {
-//            if (((SourceFileNode)file).getParent() instanceof PackageNode) {
-//                packageName = ((PackageNode)((SourceFileNode)file).getParent()).getQualifiedName() + '.';
-//            }
-//        }
+        if (file.getName().endsWith(".java")) {
+            if (((FileReferenceNode)file).getParent() instanceof PackageNode) {
+                FileReferenceNode fileNode = (FileReferenceNode)file;
+
+                if (fileNode.getParent() != null && fileNode.getParent() instanceof PackageNode) {
+                    packageName = ((PackageNode)fileNode.getParent()).getQualifiedName();
+                }
+            }
+        }
         return packageName + file.getName().substring(0, file.getName().indexOf('.'));
     }
 

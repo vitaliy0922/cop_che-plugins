@@ -21,7 +21,6 @@ import org.eclipse.che.api.promises.client.callback.AsyncPromiseHelper;
 import org.eclipse.che.api.promises.client.js.Promises;
 import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.node.interceptor.NodeInterceptor;
-import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
 import org.eclipse.che.ide.ext.java.client.project.settings.JavaNodeSettingsProvider;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
@@ -112,10 +111,10 @@ public class PackageNodeInterceptor implements NodeInterceptor {
                                  .thenPromise(checkForEmptiness(parent));
     }
 
-    private Function<Array<ItemReference>, Promise<List<ItemReference>>> checkForEmptiness(final ItemReference parent) {
-        return new Function<Array<ItemReference>, Promise<List<ItemReference>>>() {
+    private Function<List<ItemReference>, Promise<List<ItemReference>>> checkForEmptiness(final ItemReference parent) {
+        return new Function<List<ItemReference>, Promise<List<ItemReference>>>() {
             @Override
-            public Promise<List<ItemReference>> apply(Array<ItemReference> children) throws FunctionException {
+            public Promise<List<ItemReference>> apply(List<ItemReference> children) throws FunctionException {
                 if (children.isEmpty() || children.size() > 1) {
                     return Promises.resolve(Collections.singletonList(parent));
                 }

@@ -33,7 +33,6 @@ import org.eclipse.che.ide.rest.StringUnmarshaller;
 import org.eclipse.che.ide.ui.smartTree.presentation.NodePresentation;
 import org.eclipse.che.ide.util.Pair;
 import org.vectomatic.dom.svg.ui.SVGImage;
-import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +72,7 @@ public class JarFileNode extends AbstractJarEntryNode implements VirtualFile, Ha
     public void updatePresentation(@Nonnull NodePresentation presentation) {
         presentation.setPresentableText(getDisplayName());
         presentation.setPresentableIcon(isClassFile() ? nodeManager.getJavaNodesResources().javaClassIcon()
-                                       : (SVGResource)getFileIcon().getElement());
+                                                      : nodeManager.getNodesResources().file());
         presentation.setInfoText("r/o");
         presentation.setInfoTextWrapper(Pair.of("(", ")"));
     }

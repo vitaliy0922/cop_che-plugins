@@ -383,7 +383,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(editor).getEditorInput();
         verify(editorInput).getFile();
 
-        verify(file).getContent(null);
+        verify(file).getContent();
         editorTextCaptor.getValue().onSuccess(TEXT);
 
         verify(currentProject, times(2)).getProjectDescription();

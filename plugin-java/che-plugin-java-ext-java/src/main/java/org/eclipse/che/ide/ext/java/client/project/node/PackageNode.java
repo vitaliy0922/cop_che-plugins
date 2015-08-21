@@ -23,14 +23,15 @@ import org.eclipse.che.api.promises.client.callback.AsyncPromiseHelper;
 import org.eclipse.che.api.promises.client.js.Promises;
 import org.eclipse.che.ide.api.project.node.HasStorablePath;
 import org.eclipse.che.ide.api.project.node.Node;
-import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.ext.java.client.project.settings.JavaNodeSettings;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
 import org.eclipse.che.ide.project.node.ItemReferenceChainFilter;
 import org.eclipse.che.ide.project.node.resource.ItemReferenceProcessor;
 import org.eclipse.che.ide.ui.smartTree.presentation.NodePresentation;
+import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,6 +69,30 @@ public class PackageNode extends FolderReferenceNode {
 
                 if (referenceList.isEmpty() || referenceList.size() > 1) {
                     //if children in directory more than one
+
+                    final List<ItemReference> files = new ArrayList<>();
+                    List<ItemReference> otherNodes = new ArrayList<>();
+                    //filter folders to proceed deep child
+                    for (ItemReference itemReference : referenceList) {
+                        if ("file".equals(itemReference.getType())) {
+                            files.add(itemReference);
+                        } else {
+                            otherNodes.add(itemReference);
+                        }
+                    }
+
+                    if (!otherNodes.isEmpty()) {
+                        if (otherNodes.size() == 1) {
+                            return foundFirstNonEmpty(otherNodes.get(0)).thenPromise(new Function<List<ItemReference>, Promise<List<ItemReference>>>() {
+                                @Override
+                                public Promise<List<ItemReference>> apply(List<ItemReference> arg) throws FunctionException {
+                                    arg.addAll(files);
+                                    return Promises.resolve(arg);
+                                }
+                            });
+                        }
+                    }
+
                     return Promises.resolve(referenceList);
                 }
 
@@ -89,16 +114,20 @@ public class PackageNode extends FolderReferenceNode {
                                  .thenPromise(checkForEmptiness(parent));
     }
 
-    private Function<Array<ItemReference>, Promise<List<ItemReference>>> checkForEmptiness(final ItemReference parent) {
-        return new Function<Array<ItemReference>, Promise<List<ItemReference>>>() {
+    private Function<List<ItemReference>, Promise<List<ItemReference>>> checkForEmptiness(final ItemReference parent) {
+        return new Function<List<ItemReference>, Promise<List<ItemReference>>>() {
             @Override
-            public Promise<List<ItemReference>> apply(Array<ItemReference> children) throws FunctionException {
+            public Promise<List<ItemReference>> apply(List<ItemReference> children) throws FunctionException {
                 if (children.isEmpty() || children.size() > 1) {
-                    return Promises.resolve(Collections.singletonList(parent));
+                    List<ItemReference> list = new ArrayList<>();
+                    list.add(parent);
+                    return Promises.resolve(list);
                 }
 
                 if ("file".equals(children.get(0).getType())) {
-                    return Promises.resolve(Collections.singletonList(parent));
+                    List<ItemReference> list = new ArrayList<>();
+                    list.add(parent);
+                    return Promises.resolve(list);
                 } else {
                     return foundFirstNonEmpty(children.get(0));
                 }
@@ -130,5 +159,25 @@ public class PackageNode extends FolderReferenceNode {
         }
 
         return getData().getPath();
+    }
+
+    public String getQualifiedName() {
+        String fqn = "";
+
+        Node parent = getParent();
+
+        while (parent != null) {
+            if (parent instanceof FolderReferenceNode && ((FolderReferenceNode)parent).getAttributes().containsKey("javaContentRoot")) {
+                String parentStorablePath = ((FolderReferenceNode)parent).getStorablePath();
+                String currentStorablePath = getStorablePath();
+
+                fqn = currentStorablePath.substring(parentStorablePath.length() + 1).replace('/', '.');
+                break;
+            }
+
+            parent = parent.getParent();
+        }
+
+        return fqn;
     }
 }

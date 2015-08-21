@@ -47,7 +47,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPan
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.EnvironmentScript;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.EnvironmentIdValidator;
@@ -221,14 +220,6 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                                              @Override
                                              public void onSuccess(List<ItemReference> result) {
                                                  for (ItemReference item : result) {
-                                                     ProjectNode project = new ProjectNode(null,
-                                                                                           projectDescriptor,
-                                                                                           null,
-                                                                                           eventBus,
-                                                                                           projectService,
-                                                                                           unmarshallerFactory);
-                                             public void onSuccess(Array<ItemReference> result) {
-                                                 for (ItemReference item : result.asIterable()) {
                                                      VirtualFile file = new EnvironmentScript(item,
                                                                                               projectService,
                                                                                               environment.getName());

@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.git.client.merge;
 
-import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.git.gwt.client.GitServiceClient;
 import org.eclipse.che.api.git.shared.Branch;
 import org.eclipse.che.api.git.shared.MergeResult;
@@ -19,16 +22,13 @@ import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.event.FileEvent;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.commons.exception.ExceptionThrownEvent;
+import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -192,7 +192,6 @@ public class MergePresenter implements MergeView.ActionDelegate {
      *         editors that corresponds to open files
      */
     private void refreshProject(final List<EditorPartPresenter> openedEditors) {
-        eventBus.fireEvent(new RefreshProjectTreeEvent());
         for (EditorPartPresenter partPresenter : openedEditors) {
             final VirtualFile file = partPresenter.getEditorInput().getFile();
             eventBus.fireEvent(new FileEvent(file, FileEvent.FileOperation.CLOSE));

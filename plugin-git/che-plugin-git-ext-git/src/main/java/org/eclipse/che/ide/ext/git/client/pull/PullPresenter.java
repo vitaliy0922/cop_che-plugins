@@ -21,7 +21,6 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.event.FileEvent;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
 import org.eclipse.che.ide.dto.DtoFactory;
@@ -196,7 +195,6 @@ public class PullPresenter implements PullView.ActionDelegate {
      *         editors that corresponds to open files
      */
     private void refreshProject(final List<EditorPartPresenter> openedEditors) {
-        eventBus.fireEvent(new RefreshProjectTreeEvent());
         for (EditorPartPresenter partPresenter : openedEditors) {
             final VirtualFile file = partPresenter.getEditorInput().getFile();
             eventBus.fireEvent(new FileEvent(file, FileEvent.FileOperation.CLOSE));

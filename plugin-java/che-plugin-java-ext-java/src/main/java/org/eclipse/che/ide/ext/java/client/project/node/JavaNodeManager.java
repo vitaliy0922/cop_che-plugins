@@ -27,7 +27,6 @@ import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.node.settings.NodeSettings;
 import org.eclipse.che.ide.api.project.node.settings.SettingsProvider;
-import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.java.client.JavaResources;
 import org.eclipse.che.ide.ext.java.client.navigation.JavaNavigationService;
@@ -93,24 +92,24 @@ public class JavaNodeManager extends NodeManager {
     }
 
     @Nonnull
-    private RequestCall<Array<Jar>> getExternalLibrariesRC(@Nonnull final String projectPath) {
-        return new RequestCall<Array<Jar>>() {
+    private RequestCall<List<Jar>> getExternalLibrariesRC(@Nonnull final String projectPath) {
+        return new RequestCall<List<Jar>>() {
             @Override
-            public void makeCall(AsyncCallback<Array<Jar>> callback) {
-                javaService.getExternalLibraries(projectPath, _callback(callback, dtoUnmarshaller.newArrayUnmarshaller(Jar.class)));
+            public void makeCall(AsyncCallback<List<Jar>> callback) {
+                javaService.getExternalLibraries(projectPath, _callback(callback, dtoUnmarshaller.newListUnmarshaller(Jar.class)));
             }
         };
     }
 
     @Nonnull
-    private Function<Array<Jar>, List<Node>> createJarNodes(@Nonnull final ProjectDescriptor descriptor,
+    private Function<List<Jar>, List<Node>> createJarNodes(@Nonnull final ProjectDescriptor descriptor,
                                                             @Nonnull final NodeSettings nodeSettings) {
-        return new Function<Array<Jar>, List<Node>>() {
+        return new Function<List<Jar>, List<Node>>() {
             @Override
-            public List<Node> apply(Array<Jar> jars) throws FunctionException {
+            public List<Node> apply(List<Jar> jars) throws FunctionException {
                 List<Node> nodes = new ArrayList<>(jars.size());
 
-                for (Jar jar : jars.asIterable()) {
+                for (Jar jar : jars) {
                     JarContainerNode jarContainerNode = javaNodeFactory.newJarContainerNode(jar, descriptor, nodeSettings);
                     nodes.add(jarContainerNode);
                 }
@@ -129,12 +128,12 @@ public class JavaNodeManager extends NodeManager {
     }
 
     @Nonnull
-    private RequestCall<Array<JarEntry>> getLibraryChildrenRC(@Nonnull final String projectPath, final int libId) {
-        return new RequestCall<Array<JarEntry>>() {
+    private RequestCall<List<JarEntry>> getLibraryChildrenRC(@Nonnull final String projectPath, final int libId) {
+        return new RequestCall<List<JarEntry>>() {
             @Override
-            public void makeCall(AsyncCallback<Array<JarEntry>> callback) {
+            public void makeCall(AsyncCallback<List<JarEntry>> callback) {
                 javaService
-                        .getLibraryChildren(projectPath, libId, _callback(callback, dtoUnmarshaller.newArrayUnmarshaller(JarEntry.class)));
+                        .getLibraryChildren(projectPath, libId, _callback(callback, dtoUnmarshaller.newListUnmarshaller(JarEntry.class)));
             }
         };
     }
@@ -146,26 +145,26 @@ public class JavaNodeManager extends NodeManager {
     }
 
     @Nonnull
-    private RequestCall<Array<JarEntry>> getChildrenRC(@Nonnull final String projectPath, final int libId, @Nonnull final String path) {
-        return new RequestCall<Array<JarEntry>>() {
+    private RequestCall<List<JarEntry>> getChildrenRC(@Nonnull final String projectPath, final int libId, @Nonnull final String path) {
+        return new RequestCall<List<JarEntry>>() {
             @Override
-            public void makeCall(AsyncCallback<Array<JarEntry>> callback) {
+            public void makeCall(AsyncCallback<List<JarEntry>> callback) {
                 javaService
-                        .getChildren(projectPath, libId, path, _callback(callback, dtoUnmarshaller.newArrayUnmarshaller(JarEntry.class)));
+                        .getChildren(projectPath, libId, path, _callback(callback, dtoUnmarshaller.newListUnmarshaller(JarEntry.class)));
             }
         };
     }
 
     @Nonnull
-    private Function<Array<JarEntry>, List<Node>> createJarEntryNodes(final int libId, @Nonnull final ProjectDescriptor descriptor,
+    private Function<List<JarEntry>, List<Node>> createJarEntryNodes(final int libId, @Nonnull final ProjectDescriptor descriptor,
                                                                       @Nonnull final NodeSettings nodeSettings) {
-        return new Function<Array<JarEntry>, List<Node>>() {
+        return new Function<List<JarEntry>, List<Node>>() {
             @Override
-            public List<Node> apply(Array<JarEntry> entries) throws FunctionException {
+            public List<Node> apply(List<JarEntry> entries) throws FunctionException {
 
                 List<Node> nodes = new ArrayList<>();
 
-                for (JarEntry jarEntry : entries.asIterable()) {
+                for (JarEntry jarEntry : entries) {
                     Node node = createNode(jarEntry, libId, descriptor, nodeSettings);
                     if (node != null) {
                         nodes.add(node);

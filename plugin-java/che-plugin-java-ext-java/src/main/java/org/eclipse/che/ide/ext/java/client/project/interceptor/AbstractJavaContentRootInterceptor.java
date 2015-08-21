@@ -18,7 +18,6 @@ import org.eclipse.che.ide.api.project.node.interceptor.NodeInterceptor;
 import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
 import org.eclipse.che.ide.ext.java.shared.ContentRoot;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
-import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -74,10 +73,10 @@ public abstract class AbstractJavaContentRootInterceptor implements NodeIntercep
             return ContentRoot.TEST_SOURCE;
         }
 
-        String resourceFolder = _getSourceFolder(descriptor, getResourceFolderAttribute());
-        if (folderNode.getStorablePath().equals(resourceFolder)) {
-            return ContentRoot.RESOURCE;
-        }
+//        String resourceFolder = _getSourceFolder(descriptor, getResourceFolderAttribute());
+//        if (folderNode.getStorablePath().equals(resourceFolder)) {
+//            return ContentRoot.RESOURCE;
+//        }
 
         return null;
     }
@@ -105,8 +104,8 @@ public abstract class AbstractJavaContentRootInterceptor implements NodeIntercep
             case TEST_SOURCE:
                 srcFolder.getPresentation(true).setPresentableIcon(javaResourceNodeManager.getJavaNodesResources().testSrcFolder());
                 break;
-            case RESOURCE:
-                srcFolder.getPresentation(true).setPresentableIcon(javaResourceNodeManager.getJavaNodesResources().resourceFolder());
+//            case RESOURCE:
+//                srcFolder.getPresentation(true).setPresentableIcon(javaResourceNodeManager.getJavaNodesResources().resourceFolder());
             default:
                 throw new IllegalArgumentException("Wrong source type");
         }

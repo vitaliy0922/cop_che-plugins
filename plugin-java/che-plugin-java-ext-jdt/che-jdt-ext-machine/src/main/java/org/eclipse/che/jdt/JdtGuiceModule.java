@@ -61,17 +61,14 @@ public class JdtGuiceModule extends AbstractModule {
     @Provides
     @Named("che.jdt.settings.dir")
     @Singleton
-    protected String provideSettings(@Named("che.settings.folder")String pathToCheFolder){
+    protected String provideSettings(@Named("che.settings.folder") String pathToCheFolder) {
         return pathToCheFolder + "/settings";
     }
 
     @Provides
     @Named("che.jdt.workspace.index.dir")
     @Singleton
-    protected String provideIndex(@Named("che.settings.folder")String pathToCheFolder){
+    protected String provideIndex(@Named("che.settings.folder") String pathToCheFolder) {
         return pathToCheFolder + "/index";
     }
-
-
-
 }

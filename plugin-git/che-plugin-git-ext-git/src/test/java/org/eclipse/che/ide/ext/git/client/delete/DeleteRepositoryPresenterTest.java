@@ -11,7 +11,6 @@
 package org.eclipse.che.ide.ext.git.client.delete;
 
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
-import org.eclipse.che.ide.api.event.RefreshProjectTreeEvent;
 import org.eclipse.che.ide.commons.exception.ExceptionThrownEvent;
 import org.eclipse.che.ide.ext.git.client.BaseTest;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -86,7 +85,6 @@ public class DeleteRepositoryPresenterTest extends BaseTest {
         verify(rootProjectDescriptor).getAttributes();
         verify(attributes).get(anyString());
         verify(vcsProvider).clear();
-        verify(eventBus).fireEvent(Matchers.<RefreshProjectTreeEvent>anyObject());
     }
 
     @Test

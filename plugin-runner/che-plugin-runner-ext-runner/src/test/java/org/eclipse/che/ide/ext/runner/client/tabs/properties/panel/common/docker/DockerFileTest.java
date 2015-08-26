@@ -73,9 +73,6 @@ public class DockerFileTest {
         when(link2.getRel()).thenReturn(SOME_TEXT);
 
         dockerFile.getContent();
-
-        verify(link1).getHref();
-        verify(link2, never()).getHref();
     }
 
 }

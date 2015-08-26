@@ -35,7 +35,7 @@ import com.google.inject.Inject;
 
 /**
  * Service for CSV export of SQL request results.
- * 
+ *
  * @author "Mickaël Leduque"
  */
 @Path(ServicePaths.RESULT_CSV_PATH)
@@ -56,7 +56,7 @@ public class CsvExportService {
 
     /**
      * Export the SQL request result as CSV string.
-     * 
+     *
      * @param requestResult the result to convert
      * @return the CSV data
      * @throws CSVExportException any conversion error
@@ -81,10 +81,11 @@ public class CsvExportService {
     private String convertDataToCsv(final RequestResultDTO requestResult, boolean withHeader) {
         LOG.debug("convertDataToCsv - called for {}, withHeader={}", requestResult, withHeader);
 
+        CSVWriter csvWriter = null;
         final StringBuilder sb = new StringBuilder();
-        try (
-            final Writer writer = new StringBuilderWriter(sb);
-            final CSVWriter csvWriter = new CSVWriter(writer)) {
+        try (final Writer writer = new StringBuilderWriter(sb)) {
+
+            csvWriter = new CSVWriter(writer);
 
             // header
             if (withHeader) {
@@ -97,6 +98,14 @@ public class CsvExportService {
             }
         } catch (final IOException e) {
             LOG.error("Close failed on resource - expect leaks and incorrect operation", e);
+        } finally {
+            if (csvWriter != null) {
+                try {
+                    csvWriter.close();
+                } catch (IOException e) {
+                    LOG.error("Close failed on resource - expect leaks and incorrect operation", e);
+                }
+            }
         }
 
         return sb.toString();

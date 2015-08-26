@@ -74,8 +74,6 @@ public class DockerFileFactoryTest {
     private Link           link;
     @Mock
     private ItemReference  itemReference;
-    @Mock
-    private TreeStructure  treeStructure;
 
     @InjectMocks
     private DockerFileFactory factory;
@@ -104,8 +102,6 @@ public class DockerFileFactoryTest {
 
     @Test
     public void dockerFileShouldBeCreated() throws Exception {
-        when(currentProject.getCurrentTree()).thenReturn(treeStructure);
-
         VirtualFile fileNode = factory.newInstance(SOME_TEXT);
 
         verify(dtoFactory).createDto(Link.class);
@@ -117,7 +113,6 @@ public class DockerFileFactoryTest {
         verify(itemReference).withName(NAME);
         verify(itemReference).withPath(PATH);
         verify(itemReference).withMediaType(TYPE);
-        verify(currentProject).getCurrentTree();
 
         verify(itemReference).withLinks(linkListCaptor.capture());
 

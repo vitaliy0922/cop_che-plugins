@@ -23,6 +23,7 @@ import org.eclipse.che.ide.ext.java.client.project.node.PackageNode;
 import org.eclipse.che.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
 import org.eclipse.che.ide.project.event.ResourceNodeDeletedEvent;
 import org.eclipse.che.ide.project.node.FileReferenceNode;
+import org.eclipse.che.ide.project.node.ResourceBasedNode;
 
 import java.util.Map;
 
@@ -44,37 +45,19 @@ public class FileWatcher {
         eventBus.addHandler(ResourceNodeDeletedEvent.getType(), new ResourceNodeDeletedEvent.ResourceNodeDeletedHandler() {
             @Override
             public void onResourceEvent(ResourceNodeDeletedEvent event) {
-//                if (event.getEvent() == ResourceNodeDeletedEvent.Event.DELETED) {
-//                    if (event.getItem() instanceof SourceFileNode) {
-//                        String fqn = getFQN(((SourceFileNode)event.getItem()));
-//                        worker.removeFqnFromCache(fqn);
-//                        reparseAllOpenedFiles();
-//                    } else if (event.getItem() instanceof PackageNode) {
-//                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
-//                        reparseAllOpenedFiles();
-//                    }
-//                }
+
+                ResourceBasedNode node = event.getNode();
+                if (node instanceof PackageNode) {
+                    worker.removeFqnFromCache(((PackageNode)node).getQualifiedName());
+                    reparseAllOpenedFiles();
+                } else if (node instanceof FileReferenceNode) {
+                    String fqn = getFQN((FileReferenceNode)node);
+                    worker.removeFqnFromCache(fqn);
+                    reparseAllOpenedFiles();
+                }
             }
         });
-
-//        eventBus.addHandler(ItemEvent.TYPE, new ItemHandler() {
-//            @Override
-//            public void onItem(ItemEvent event) {
-//                if (event.getOperation() == ItemEvent.ItemOperation.DELETED) {
-//                    if (event.getItem() instanceof SourceFileNode) {
-//                        String fqn = getFQN(((SourceFileNode)event.getItem()));
-//                        worker.removeFqnFromCache(fqn);
-//                        reparseAllOpenedFiles();
-//                    } else if (event.getItem() instanceof PackageNode) {
-//                        worker.removeFqnFromCache(((PackageNode)event.getItem()).getQualifiedName());
-//                        reparseAllOpenedFiles();
-//                    }
-//
-//                }
-//            }
-//        });
     }
-
 
     public void editorOpened(final EditorPartPresenter editor) {
         final PropertyListener propertyListener = new PropertyListener() {
@@ -115,9 +98,9 @@ public class FileWatcher {
 
     private void reparseAllOpenedFiles() {
         Map<String, EditorPartPresenter> openedEditors = editorAgent.getOpenedEditors();
-        for (EditorPartPresenter editorPartPresenter: openedEditors.values()) {
+        for (EditorPartPresenter editorPartPresenter : openedEditors.values()) {
             if (editorPartPresenter instanceof EmbeddedTextEditorPresenter) {
-                final EmbeddedTextEditorPresenter< ? > editor = (EmbeddedTextEditorPresenter< ? >)editorPartPresenter;
+                final EmbeddedTextEditorPresenter<?> editor = (EmbeddedTextEditorPresenter<?>)editorPartPresenter;
                 editor.refreshEditor();
             }
         }

@@ -30,12 +30,16 @@ import org.eclipse.che.api.promises.client.PromiseError;
 import org.eclipse.che.api.promises.client.callback.AsyncPromiseHelper;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.NotificationManager;
+import org.eclipse.che.ide.extension.machine.client.MachineLocalizationConstant;
 import org.eclipse.che.ide.extension.machine.client.OutputMessageUnmarshaller;
 import org.eclipse.che.ide.extension.machine.client.inject.factories.EntityFactory;
 import org.eclipse.che.ide.extension.machine.client.machine.MachineStatusNotifier.RunningListener;
 import org.eclipse.che.ide.extension.machine.client.machine.console.MachineConsolePresenter;
 import org.eclipse.che.ide.extension.machine.client.machine.extserver.ExtServerStateController;
 import org.eclipse.che.ide.extension.machine.client.util.RecipeProvider;
+import org.eclipse.che.ide.loader.OperationInfo;
+import org.eclipse.che.ide.loader.OperationInfo.Status;
+import org.eclipse.che.ide.loader.LoaderPresenter;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.util.UUID;
 import org.eclipse.che.ide.util.loging.Log;
@@ -58,21 +62,25 @@ import static org.eclipse.che.ide.extension.machine.client.machine.MachineManage
 @Singleton
 public class MachineManager {
 
+    private final LoaderPresenter             loader;
+    private       MachineLocalizationConstant localizedConstants;
     private final ExtServerStateController extServerStateController;
-    private final MachineServiceClient     machineServiceClient;
-    private final MessageBus               messageBus;
-    private final MachineConsolePresenter  machineConsolePresenter;
-    private final NotificationManager      notificationManager;
-    private final MachineStatusNotifier    machineStatusNotifier;
-    private final DialogFactory            dialogFactory;
-    private final RecipeProvider           recipeProvider;
-    private final EntityFactory            entityFactory;
-    private final AppContext               appContext;
+    private final MachineServiceClient    machineServiceClient;
+    private final MessageBus              messageBus;
+    private final MachineConsolePresenter machineConsolePresenter;
+    private final NotificationManager     notificationManager;
+    private final MachineStatusNotifier   machineStatusNotifier;
+    private final DialogFactory           dialogFactory;
+    private final RecipeProvider          recipeProvider;
+    private final EntityFactory           entityFactory;
+    private final AppContext              appContext;
 
     private Machine devMachine;
 
     @Inject
-    public MachineManager(ExtServerStateController extServerStateController,
+    public MachineManager(LoaderPresenter loaderPresenter,
+                          MachineLocalizationConstant localizedConstants,
+                          ExtServerStateController extServerStateController,
                           MachineServiceClient machineServiceClient,
                           MessageBus messageBus,
                           MachineConsolePresenter machineConsolePresenter,
@@ -82,6 +90,8 @@ public class MachineManager {
                           RecipeProvider recipeProvider,
                           EntityFactory entityFactory,
                           AppContext appContext) {
+        this.loader = loaderPresenter;
+        this.localizedConstants = localizedConstants;
         this.extServerStateController = extServerStateController;
         this.machineServiceClient = machineServiceClient;
         this.messageBus = messageBus;
@@ -121,6 +131,8 @@ public class MachineManager {
                               @Nonnull final String displayName,
                               final boolean bindWorkspace,
                               @Nonnull final MachineOperationType operationType) {
+        final OperationInfo operationInfo = new OperationInfo(localizedConstants.startingMachine(displayName), Status.IN_PROGRESS, loader);
+        loader.show(operationInfo);
         downloadRecipe(recipeURL).thenPromise(new Function<String, Promise<MachineDescriptor>>() {
             @Override
             public Promise<MachineDescriptor> apply(String recipeScript) throws FunctionException {
@@ -143,6 +155,7 @@ public class MachineManager {
                     runningListener = new RunningListener() {
                         @Override
                         public void onRunning() {
+                            operationInfo.setStatus(Status.FINISHED);
                             machineRunning(machineDescriptor.getId());
                         }
                     };
@@ -220,6 +233,7 @@ public class MachineManager {
                         @Override
                         protected void onMessageReceived(String result) {
                             machineConsolePresenter.print(result);
+                            loader.printToDetails(new OperationInfo(result, Status.FINISHED));
                         }
 
                         @Override

@@ -21,6 +21,7 @@ import org.eclipse.che.ide.api.project.tree.generic.FileNode;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.git.client.BaseTest;
 import org.eclipse.che.ide.ext.git.client.GitOutputPartPresenter;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.ui.dialogs.CancelCallback;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
@@ -99,6 +100,8 @@ public class BranchPresenterTest extends BaseTest {
     private DialogFactory          dialogFactory;
     @Mock
     private DtoFactory             dtoFactory;
+    @Mock
+    private NewProjectExplorerPresenter projectExplorer;
     private BranchPresenter        presenter;
 
     @Override
@@ -106,7 +109,7 @@ public class BranchPresenterTest extends BaseTest {
         super.disarm();
 
         presenter = new BranchPresenter(view, eventBus, dtoFactory, editorAgent, service, constant, appContext, notificationManager,
-                                        dtoUnmarshallerFactory, gitConsole, workspaceAgent, dialogFactory);
+                                        dtoUnmarshallerFactory, gitConsole, workspaceAgent, dialogFactory, projectExplorer);
 
         NavigableMap<String, EditorPartPresenter> partPresenterMap = new TreeMap<>();
         partPresenterMap.put("partPresenter", partPresenter);
@@ -313,7 +316,6 @@ public class BranchPresenterTest extends BaseTest {
         verify(appContext).getCurrentProject();
         verify(notificationManager, never()).showError(anyString());
         verify(constant, never()).branchCheckoutFailed();
-        verify(eventBus).fireEvent(Matchers.<Event<OpenProjectEvent>>anyObject());
     }
 
     @Test
@@ -332,7 +334,6 @@ public class BranchPresenterTest extends BaseTest {
         verify(selectedBranch).isRemote();
         verify(service, times(2)).branchList(eq(rootProjectDescriptor), eq(LIST_ALL), (AsyncRequestCallback<List<Branch>>)anyObject());
         verify(appContext).getCurrentProject();
-        verify(eventBus).fireEvent(Matchers.<Event<OpenProjectEvent>>anyObject());
     }
 
     @Test

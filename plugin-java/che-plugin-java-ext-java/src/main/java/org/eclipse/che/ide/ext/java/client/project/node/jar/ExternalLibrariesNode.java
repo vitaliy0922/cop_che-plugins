@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author Vlad Zhukovskiy
  */
-public class ExternalLibrariesNode extends SyntheticBasedNode<String> {
+public class ExternalLibrariesNode extends SyntheticBasedNode<ProjectDescriptor> {
 
     private final JavaNodeManager javaNodeManager;
 
@@ -35,7 +35,7 @@ public class ExternalLibrariesNode extends SyntheticBasedNode<String> {
     public ExternalLibrariesNode(@Assisted ProjectDescriptor projectDescriptor,
                                  @Assisted NodeSettings nodeSettings,
                                  JavaNodeManager javaNodeManager) {
-        super("External Libraries", projectDescriptor, nodeSettings);
+        super(projectDescriptor, projectDescriptor, nodeSettings);
         this.javaNodeManager = javaNodeManager;
     }
 
@@ -48,13 +48,13 @@ public class ExternalLibrariesNode extends SyntheticBasedNode<String> {
     @Override
     public void updatePresentation(@Nonnull NodePresentation presentation) {
         presentation.setPresentableIcon(javaNodeManager.getJavaNodesResources().librariesIcon());
-        presentation.setPresentableText(getData());
+        presentation.setPresentableText(getName());
     }
 
     @Nonnull
     @Override
     public String getName() {
-        return getData();
+        return "External Libraries";
     }
 
     @Override

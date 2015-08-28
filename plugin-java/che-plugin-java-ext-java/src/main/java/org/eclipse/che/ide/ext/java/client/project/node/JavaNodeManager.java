@@ -39,7 +39,9 @@ import org.eclipse.che.ide.ext.java.shared.JarEntry;
 import org.eclipse.che.ide.project.node.NodeManager;
 import org.eclipse.che.ide.project.node.factory.NodeFactory;
 import org.eclipse.che.ide.project.shared.NodesResources;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.Unmarshallable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -230,5 +232,26 @@ public class JavaNodeManager extends NodeManager {
 
     public JavaNavigationService getJavaService() {
         return javaService;
+    }
+
+    public Promise<Node> getClassNode(final ProjectDescriptor descriptor, final int libId, final String path) {
+        return AsyncPromiseHelper.createFromAsyncRequest(new RequestCall<Node>() {
+            @Override
+            public void makeCall(final AsyncCallback<Node> callback) {
+                Unmarshallable<JarEntry> u = dtoUnmarshaller.newUnmarshaller(JarEntry.class);
+                javaService.getEntry(descriptor.getPath(), libId, path, new AsyncRequestCallback<JarEntry>(u) {
+                    @Override
+                    protected void onSuccess(JarEntry entry) {
+                        Node node = createNode(entry, libId, descriptor, settingsProvider.getSettings());
+                        callback.onSuccess(node);
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable exception) {
+                        callback.onFailure(exception);
+                    }
+                });
+            }
+        });
     }
 }

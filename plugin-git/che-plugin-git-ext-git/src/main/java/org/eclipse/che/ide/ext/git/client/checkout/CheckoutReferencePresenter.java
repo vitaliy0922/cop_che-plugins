@@ -14,11 +14,13 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
-import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.api.git.gwt.client.GitServiceClient;
+import org.eclipse.che.api.git.shared.BranchCheckoutRequest;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.NotificationManager;
+import org.eclipse.che.ide.dto.DtoFactory;
+import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 
@@ -36,6 +38,7 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
     private       GitLocalizationConstant     constant;
     private       CheckoutReferenceView       view;
     private final NewProjectExplorerPresenter projectExplorer;
+    private final DtoFactory              dtoFactory;
 
     @Inject
     public CheckoutReferencePresenter(CheckoutReferenceView view,
@@ -45,8 +48,11 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
                                       GitLocalizationConstant constant,
                                       NotificationManager notificationManager,
                                       NewProjectExplorerPresenter projectExplorer) {
+                                      NotificationManager notificationManager,
+                                      DtoFactory dtoFactory) {
         this.view = view;
         this.projectExplorer = projectExplorer;
+        this.dtoFactory = dtoFactory;
         this.view.setDelegate(this);
         this.service = service;
         this.appContext = appContext;
@@ -70,7 +76,10 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
     public void onCheckoutClicked(final String reference) {
         view.close();
         final ProjectDescriptor project = appContext.getCurrentProject().getRootProject();
-        service.branchCheckout(project, reference, null, false,
+        service.branchCheckout(project,
+                               dtoFactory.createDto(BranchCheckoutRequest.class)
+                                         .withName(reference)
+                                         .withCreateNew(false),
                                new AsyncRequestCallback<String>() {
                                    @Override
                                    protected void onSuccess(String result) {
@@ -89,7 +98,6 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
                                    }
                                }
                               );
-
     }
 
     @Override

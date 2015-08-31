@@ -11,9 +11,9 @@
 package org.eclipse.che.ide.ext.git.client.branch;
 
 import org.eclipse.che.api.core.rest.shared.dto.ServiceError;
-import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.api.git.gwt.client.GitServiceClient;
 import org.eclipse.che.api.git.shared.Branch;
+import org.eclipse.che.api.git.shared.BranchCheckoutRequest;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.editor.EditorAgent;
@@ -23,6 +23,7 @@ import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.parts.PartStackType;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.dto.DtoFactory;
+import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.ide.ext.git.client.GitOutputPartPresenter;
 import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -199,16 +200,19 @@ public class BranchPresenter implements BranchView.ActionDelegate {
         }
 
         String name = selectedBranch.getDisplayName();
-        String startingPoint = null;
-        boolean remote = selectedBranch.isRemote();
-        if (remote) {
-            startingPoint = selectedBranch.getDisplayName();
-        }
+
         if (name == null) {
             return;
         }
 
-        service.branchCheckout(project.getRootProject(), name, startingPoint, remote, new AsyncRequestCallback<String>() {
+        final BranchCheckoutRequest branchCheckoutRequest = dtoFactory.createDto(BranchCheckoutRequest.class);
+        if (selectedBranch.isRemote()) {
+            branchCheckoutRequest.setTrackBranch(selectedBranch.getDisplayName());
+        } else {
+            branchCheckoutRequest.setName(selectedBranch.getDisplayName());
+        }
+
+        service.branchCheckout(project.getRootProject(), branchCheckoutRequest, new AsyncRequestCallback<String>() {
             @Override
             protected void onSuccess(String result) {
                 getBranches();
@@ -216,7 +220,6 @@ public class BranchPresenter implements BranchView.ActionDelegate {
                 //In this case we can have unconfigured state of the project,
                 //so we must repeat the logic which is performed when we open a project
                 projectExplorer.synchronizeTree();
-                view.close();
 //                eventBus.fireEvent(new OpenProjectEvent(projectPath));
             }
 

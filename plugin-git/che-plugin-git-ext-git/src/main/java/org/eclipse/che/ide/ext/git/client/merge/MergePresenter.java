@@ -25,7 +25,6 @@ import org.eclipse.che.ide.api.event.FileEvent;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.project.tree.VirtualFile;
-import org.eclipse.che.ide.commons.exception.ExceptionThrownEvent;
 import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
@@ -34,13 +33,13 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.eclipse.che.api.git.shared.BranchListRequest.LIST_LOCAL;
+import static org.eclipse.che.api.git.shared.BranchListRequest.LIST_REMOTE;
+import static org.eclipse.che.api.git.shared.MergeResult.MergeStatus.ALREADY_UP_TO_DATE;
 import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
 import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
 import static org.eclipse.che.ide.ext.git.client.merge.Reference.RefType.LOCAL_BRANCH;
 import static org.eclipse.che.ide.ext.git.client.merge.Reference.RefType.REMOTE_BRANCH;
-import static org.eclipse.che.api.git.shared.BranchListRequest.LIST_LOCAL;
-import static org.eclipse.che.api.git.shared.BranchListRequest.LIST_REMOTE;
-import static org.eclipse.che.api.git.shared.MergeResult.MergeStatus.ALREADY_UP_TO_DATE;
 
 /**
  * Presenter to perform merge reference with current HEAD commit.
@@ -117,7 +116,6 @@ public class MergePresenter implements MergeView.ActionDelegate {
 
                                @Override
                                protected void onFailure(Throwable exception) {
-                                   eventBus.fireEvent(new ExceptionThrownEvent(exception));
                                    Notification notification = new Notification(exception.getMessage(), ERROR);
                                    notificationManager.showNotification(notification);
                                }
@@ -144,7 +142,6 @@ public class MergePresenter implements MergeView.ActionDelegate {
 
                                @Override
                                protected void onFailure(Throwable exception) {
-                                   eventBus.fireEvent(new ExceptionThrownEvent(exception));
                                    Notification notification = new Notification(exception.getMessage(), ERROR);
                                    notificationManager.showNotification(notification);
                                }

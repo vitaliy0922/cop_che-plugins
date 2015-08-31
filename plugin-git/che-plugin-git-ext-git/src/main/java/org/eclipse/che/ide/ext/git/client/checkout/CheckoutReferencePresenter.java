@@ -47,8 +47,7 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
                                       AppContext appContext,
                                       GitLocalizationConstant constant,
                                       NotificationManager notificationManager,
-                                      NewProjectExplorerPresenter projectExplorer) {
-                                      NotificationManager notificationManager,
+                                      NewProjectExplorerPresenter projectExplorer,
                                       DtoFactory dtoFactory) {
         this.view = view;
         this.projectExplorer = projectExplorer;

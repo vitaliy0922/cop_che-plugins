@@ -10,16 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.git.client.branch;
 
-import com.google.web.bindery.event.shared.Event;
-
 import org.eclipse.che.api.git.shared.Branch;
 import org.eclipse.che.api.git.shared.BranchCheckoutRequest;
 import org.eclipse.che.ide.api.editor.EditorAgent;
 import org.eclipse.che.ide.api.editor.EditorInput;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
-import org.eclipse.che.ide.api.event.OpenProjectEvent;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
-import org.eclipse.che.ide.api.project.tree.generic.FileNode;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.git.client.BaseTest;
 import org.eclipse.che.ide.ext.git.client.GitOutputPartPresenter;
@@ -35,7 +31,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
@@ -82,8 +77,8 @@ public class BranchPresenterTest extends BaseTest {
     public static final boolean IS_ACTIVE          = true;
     @Mock
     private BranchView             view;
-    @Mock
-    private FileNode               file;
+//    @Mock
+//    private FileNode               file;
     @Mock
     private EditorInput            editorInput;
     @Mock
@@ -102,7 +97,6 @@ public class BranchPresenterTest extends BaseTest {
     private DtoFactory             dtoFactory;
     @Mock
     private NewProjectExplorerPresenter projectExplorer;
-    private BranchPresenter        presenter;
     @Mock
     private BranchCheckoutRequest  branchCheckoutRequest;
 
@@ -124,7 +118,7 @@ public class BranchPresenterTest extends BaseTest {
         when(selectedBranch.isActive()).thenReturn(IS_ACTIVE);
         when(editorAgent.getOpenedEditors()).thenReturn(partPresenterMap);
         when(partPresenter.getEditorInput()).thenReturn(editorInput);
-        when(editorInput.getFile()).thenReturn(file);
+//        when(editorInput.getFile()).thenReturn(file);
     }
 
     @Ignore

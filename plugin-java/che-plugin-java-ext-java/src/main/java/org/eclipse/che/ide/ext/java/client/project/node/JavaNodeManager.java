@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.project.node;
 
+import com.google.common.base.Strings;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -58,6 +59,9 @@ public class JavaNodeManager extends NodeManager {
     private JavaResources            javaResources;
     private EventBus                 eventBus;
     private JavaNodeSettingsProvider settingsProvider;
+
+    public static final String JAVA_MIME_TYPE = "text/x-java-source";
+    public static final String JAVA_EXT = ".java";
 
     @Inject
     public JavaNodeManager(NodeFactory nodeFactory,
@@ -221,9 +225,28 @@ public class JavaNodeManager extends NodeManager {
         if ("folder".equals(itemReference.getType()) || "project".equals(itemReference.getType())) {
             return javaNodeFactory.newPackageNode(itemReference, descriptor, (JavaNodeSettings)settingsProvider.getSettings());
         } else if ("file".equals(itemReference.getType())) {
-            return nodeFactory.newFileReferenceNode(itemReference, descriptor, settings);
+            return createFileNodeByType(itemReference, descriptor, settings);
         }
         return null;
+    }
+
+    public Node createFileNodeByType(ItemReference itemReference, ProjectDescriptor descriptor, NodeSettings settings) {
+        if (isJavaItemReference(itemReference)) {
+            return javaNodeFactory.newJavaFileNode(itemReference, descriptor, (JavaNodeSettings)settingsProvider.getSettings());
+        }
+
+        return nodeFactory.newFileReferenceNode(itemReference, descriptor, settings);
+    }
+
+    public boolean isJavaItemReference(ItemReference itemReference) {
+        final String mimeType = itemReference.getMediaType();
+
+        //first detect by mime type
+        if (!Strings.isNullOrEmpty(mimeType) && JAVA_MIME_TYPE.equals(mimeType)) {
+            return true;
+        }
+
+        return itemReference.getName().endsWith(JAVA_EXT);
     }
 
     public EventBus getEventBus() {

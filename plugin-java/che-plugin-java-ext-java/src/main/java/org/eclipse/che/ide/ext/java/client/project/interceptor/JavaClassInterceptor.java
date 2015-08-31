@@ -10,17 +10,23 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.project.interceptor;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.api.promises.client.Promise;
 import org.eclipse.che.api.promises.client.js.Promises;
+import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.node.interceptor.NodeInterceptor;
 import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
+import org.eclipse.che.ide.ext.java.client.project.settings.JavaNodeSettings;
 import org.eclipse.che.ide.project.node.FileReferenceNode;
-import org.eclipse.che.ide.util.loging.Log;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -38,25 +44,36 @@ public class JavaClassInterceptor implements NodeInterceptor {
 
     @Override
     public Promise<List<Node>> intercept(Node parent, List<Node> children) {
-
-        for (Node child : children) {
-            if (child instanceof FileReferenceNode) {
-                FileReferenceNode fileNode = (FileReferenceNode)child;
-
-                if (!fileNode.getName().endsWith(".java")) {
-                    continue;
-                }
-
-                fileNode.getPresentation(false).setPresentableText(fileNode.getName().replace(".java", ""));
-                fileNode.getPresentation(false).setPresentableIcon(nodeManager.getJavaNodesResources().fileJava());
-            }
-        }
-
-        return Promises.resolve(children);
+        Iterable<Node> nodes = Iterables.transform(children, intercept());
+        List<Node> nodeList = Lists.newArrayList(nodes);
+        return Promises.resolve(nodeList);
     }
 
     @Override
     public Integer weightOrder() {
         return 52;
+    }
+
+    private Function<Node, Node> intercept() {
+        return new Function<Node, Node>() {
+            @Nullable
+            @Override
+            public Node apply(@Nullable Node child) {
+                if (!(child instanceof FileReferenceNode)) {
+                    return child;
+                }
+
+                ItemReference data = ((FileReferenceNode)child).getData();
+
+                if (!nodeManager.isJavaItemReference(data)) {
+                    return child;
+                }
+
+                return nodeManager.getJavaNodeFactory().newJavaFileNode(data,
+                                                                        ((HasProjectDescriptor)child).getProjectDescriptor(),
+                                                                        (JavaNodeSettings)nodeManager.getJavaSettingsProvider()
+                                                                                                     .getSettings());
+            }
+        };
     }
 }

@@ -78,8 +78,6 @@ public class CheckoutReferencePresenter implements CheckoutReferenceView.ActionD
                                        //In this case we can have unconfigured state of the project,
                                        //so we must repeat the logic which is performed when we open a project
                                        projectExplorer.synchronizeTree();
-                                       view.close();
-//                                       eventBus.fireEvent(new OpenProjectEvent(projectPath));
                                    }
 
                                    @Override

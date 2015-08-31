@@ -17,6 +17,7 @@ import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.selection.Selection;
 import org.eclipse.che.ide.ext.git.client.BaseTest;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.project.node.FileReferenceNode;
 import org.eclipse.che.ide.project.node.FolderReferenceNode;
 import org.eclipse.che.ide.project.node.ProjectDescriptorNode;
@@ -63,6 +64,8 @@ public class RemoveFromIndexPresenterTest extends BaseTest {
     private EditorInput              editorInput;
     @Mock
     private FileReferenceNode        file;
+    @Mock
+    private NewProjectExplorerPresenter projectExplorer;
 
     @Override
     public void disarm() {
@@ -75,7 +78,8 @@ public class RemoveFromIndexPresenterTest extends BaseTest {
                                                  appContext,
                                                  selectionAgent,
                                                  notificationManager,
-                                                 editorAgent);
+                                                 editorAgent,
+                                                 projectExplorer);
         NavigableMap<String, EditorPartPresenter> partPresenterMap = new TreeMap<>();
         partPresenterMap.put("partPresenter", partPresenter);
 

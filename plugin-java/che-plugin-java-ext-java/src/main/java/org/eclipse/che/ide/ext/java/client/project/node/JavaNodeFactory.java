@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.java.client.project.node;
 
-import com.sun.org.apache.xpath.internal.NodeSet;
-
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.ide.api.project.node.settings.NodeSettings;
@@ -49,4 +47,8 @@ public interface JavaNodeFactory {
     PackageNode newPackageNode(@Nonnull ItemReference itemReference,
                                @Nonnull ProjectDescriptor projectDescriptor,
                                @Nonnull JavaNodeSettings nodeSettings);
+
+    JavaFileNode newJavaFileNode(@Nonnull ItemReference itemReference,
+                                 @Nonnull ProjectDescriptor projectDescriptor,
+                                 @Nonnull JavaNodeSettings nodeSettings);
 }

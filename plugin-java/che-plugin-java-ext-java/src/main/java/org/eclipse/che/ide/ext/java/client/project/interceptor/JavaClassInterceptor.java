@@ -22,6 +22,7 @@ import org.eclipse.che.api.promises.client.js.Promises;
 import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
 import org.eclipse.che.ide.api.project.node.Node;
 import org.eclipse.che.ide.api.project.node.interceptor.NodeInterceptor;
+import org.eclipse.che.ide.ext.java.client.project.node.JavaFileNode;
 import org.eclipse.che.ide.ext.java.client.project.node.JavaNodeManager;
 import org.eclipse.che.ide.ext.java.client.project.settings.JavaNodeSettings;
 import org.eclipse.che.ide.project.node.FileReferenceNode;
@@ -44,7 +45,7 @@ public class JavaClassInterceptor implements NodeInterceptor {
 
     @Override
     public Promise<List<Node>> intercept(Node parent, List<Node> children) {
-        Iterable<Node> nodes = Iterables.transform(children, intercept());
+        Iterable<Node> nodes = Iterables.transform(children, intercept(parent));
         List<Node> nodeList = Lists.newArrayList(nodes);
         return Promises.resolve(nodeList);
     }
@@ -54,7 +55,7 @@ public class JavaClassInterceptor implements NodeInterceptor {
         return 52;
     }
 
-    private Function<Node, Node> intercept() {
+    private Function<Node, Node> intercept(final Node parent) {
         return new Function<Node, Node>() {
             @Nullable
             @Override
@@ -69,10 +70,16 @@ public class JavaClassInterceptor implements NodeInterceptor {
                     return child;
                 }
 
-                return nodeManager.getJavaNodeFactory().newJavaFileNode(data,
-                                                                        ((HasProjectDescriptor)child).getProjectDescriptor(),
-                                                                        (JavaNodeSettings)nodeManager.getJavaSettingsProvider()
-                                                                                                     .getSettings());
+                JavaFileNode node =
+                        nodeManager.getJavaNodeFactory().newJavaFileNode(data,
+                                                                         ((HasProjectDescriptor)child).getProjectDescriptor(),
+                                                                         (JavaNodeSettings)nodeManager.getJavaSettingsProvider()
+                                                                                                      .getSettings());
+
+                //fix parent
+                node.setParent(parent);
+
+                return node;
             }
         };
     }

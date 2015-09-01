@@ -20,6 +20,7 @@ import org.eclipse.che.ide.api.event.ProjectActionEvent;
 import org.eclipse.che.ide.api.event.ProjectActionHandler;
 import org.eclipse.che.ide.api.parts.PartStackType;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
+import org.eclipse.che.ide.api.project.node.HasStorablePath;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.selection.Selection;
 import org.eclipse.che.ide.ext.svn.client.action.SubversionAction;
@@ -120,9 +121,9 @@ public class SubversionActionPresenter {
      * Returns currently selected project item.
      * @return
      */
-    protected TreeNode<?> getSelectedNode() {
+    protected HasStorablePath getSelectedNode() {
         Object selectedNode = projectExplorerPart.getSelection().getHeadElement();
-        return /*selectedNode != null && selectedNode instanceof StorableNode ? (StorableNode)selectedNode : */null;
+        return selectedNode != null && selectedNode instanceof HasStorablePath ? (HasStorablePath)selectedNode : null;
     }
 
     /**
@@ -135,10 +136,6 @@ public class SubversionActionPresenter {
 
         if (selection.isEmpty()) {
             return Collections.emptyList();
-        }
-
-        for (Object o : selection) {
-
         }
 
 //            for (final Object item : selection.getAllElements()) {

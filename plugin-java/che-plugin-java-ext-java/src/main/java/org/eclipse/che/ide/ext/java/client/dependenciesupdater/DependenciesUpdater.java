@@ -189,15 +189,6 @@ public class DependenciesUpdater {
         }
     }
 
-    private void refreshExtLibs(ProjectDescriptor project) {
-//        if (javaTreeStructure != null) {
-//            ExternalLibrariesNode librariesNode = javaTreeStructure.getExternalLibrariesNode(project.getPath());
-//            if (librariesNode != null && librariesNode.isOpened()) {
-//                eventBus.fireEvent(new RefreshProjectTreeEvent(librariesNode));
-//            }
-//        }
-    }
-
     private void updateFinishedWithError(Throwable exception, Notification notification) {
         buildContext.setBuilding(false);
         notification.setMessage(exception.getMessage());

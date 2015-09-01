@@ -39,19 +39,14 @@ import java.util.List;
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
  */
-public class DockerFile /*extends FileNode */implements VirtualFile {
+public class DockerFile implements VirtualFile {
 
     public static final String GET_CONTENT = "get content";
     private final ProjectServiceClient projectServiceClient;
     private final ItemReference data;
 
-    public DockerFile(/*@Nonnull EventBus eventBus,*/
-                      @Nonnull ProjectServiceClient projectServiceClient,
-//                      @Nonnull DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                      @Nonnull ItemReference data/*,
-                      @Nonnull TreeStructure treeStructure,
-                      @Nonnull EditorAgent editorAgent*/) {
-//        super(null, data, treeStructure, eventBus, projectServiceClient, dtoUnmarshallerFactory, editorAgent);
+    public DockerFile(@Nonnull ProjectServiceClient projectServiceClient,
+                      @Nonnull ItemReference data) {
         this.projectServiceClient = projectServiceClient;
         this.data = data;
     }

@@ -19,6 +19,7 @@ import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.git.client.GitLocalizationConstant;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 
 /**
@@ -33,6 +34,7 @@ public class DeleteRepositoryPresenter {
     private GitLocalizationConstant constant;
     private AppContext              appContext;
     private NotificationManager     notificationManager;
+    private final NewProjectExplorerPresenter projectExplorer;
 
     /**
      * Create presenter.
@@ -48,12 +50,14 @@ public class DeleteRepositoryPresenter {
                                      EventBus eventBus,
                                      GitLocalizationConstant constant,
                                      AppContext appContext,
-                                     NotificationManager notificationManager) {
+                                     NotificationManager notificationManager,
+                                     NewProjectExplorerPresenter projectExplorer) {
         this.service = service;
         this.eventBus = eventBus;
         this.constant = constant;
         this.appContext = appContext;
         this.notificationManager = notificationManager;
+        this.projectExplorer = projectExplorer;
     }
 
     /** Delete Git repository. */
@@ -66,6 +70,7 @@ public class DeleteRepositoryPresenter {
 
                 notificationManager.showInfo(constant.deleteGitRepositorySuccess());
                 //it's need for hide .git in project tree
+                projectExplorer.synchronizeTree();
             }
 
             @Override

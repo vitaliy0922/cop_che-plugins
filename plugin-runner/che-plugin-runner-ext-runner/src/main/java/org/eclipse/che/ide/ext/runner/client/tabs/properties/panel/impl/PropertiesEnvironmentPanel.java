@@ -285,18 +285,6 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                 notificationManager.showError(arg.getMessage());
             }
         });
-
-//        editor.getEditorInput().getFile().getContent(new AsyncCallback<String>() {
-//            @Override
-//            public void onSuccess(String content) {
-//                createFile(content, fileName);
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable) {
-//                notificationManager.showError(throwable.getMessage());
-//            }
-//        });
     }
 
     private void createFile(@Nonnull String content, @Nonnull String fileName) {

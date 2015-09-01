@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 /**
  * Testing {@link DeleteRepositoryPresenter} functionality.
  *
- * @author <a href="mailto:aplotnikov@codenvy.com">Andrey Plotnikov</a>
+ * @author Andrey Plotnikov
  */
 public class DeleteRepositoryPresenterTest extends BaseTest {
     private DeleteRepositoryPresenter presenter;
@@ -56,7 +56,7 @@ public class DeleteRepositoryPresenterTest extends BaseTest {
         when(css.glassVisible()).thenReturn("sdgsdf");
         when(css.contentVisible()).thenReturn("sdgsdf");
         when(css.animationDuration()).thenReturn(1);
-        presenter = new DeleteRepositoryPresenter(service, eventBus, constant, appContext, notificationManager);
+        presenter = new DeleteRepositoryPresenter(service, eventBus, constant, appContext, notificationManager, projectExplorer);
     }
 
     @Test

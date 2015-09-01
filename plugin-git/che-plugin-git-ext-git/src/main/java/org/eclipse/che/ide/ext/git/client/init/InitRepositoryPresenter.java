@@ -15,6 +15,7 @@ import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.git.client.GitRepositoryInitializer;
+import org.eclipse.che.ide.part.explorer.project.NewProjectExplorerPresenter;
 import org.eclipse.che.ide.util.loging.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -32,22 +33,25 @@ import javax.annotation.Nonnull;
 @Singleton
 public class InitRepositoryPresenter {
     private final GitRepositoryInitializer gitRepositoryInitializer;
-    private final EventBus                 eventBus;
-    private final AppContext               appContext;
-    private final GitLocalizationConstant  constant;
-    private final NotificationManager      notificationManager;
+    private final NewProjectExplorerPresenter projectExplorer;
+    private final EventBus                eventBus;
+    private final AppContext              appContext;
+    private final GitLocalizationConstant constant;
+    private final NotificationManager     notificationManager;
 
     @Inject
     public InitRepositoryPresenter(AppContext appContext,
                                    EventBus eventBus,
                                    GitLocalizationConstant constant,
                                    NotificationManager notificationManager,
-                                   GitRepositoryInitializer gitRepositoryInitializer) {
+                                   GitRepositoryInitializer gitRepositoryInitializer,
+                                   NewProjectExplorerPresenter projectExplorer) {
         this.appContext = appContext;
         this.eventBus = eventBus;
         this.constant = constant;
         this.notificationManager = notificationManager;
         this.gitRepositoryInitializer = gitRepositoryInitializer;
+        this.projectExplorer = projectExplorer;
     }
 
     public void initRepository() {
@@ -68,6 +72,7 @@ public class InitRepositoryPresenter {
             public void onSuccess(Void result) {
                 notificationManager.showInfo(constant.initSuccess());
                 //it's need for show .git in project tree
+                projectExplorer.synchronizeTree();
             }
         });
     }

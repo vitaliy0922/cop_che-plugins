@@ -50,7 +50,8 @@ public class InitRepositoryPresenterTest extends BaseTest {
                                                 eventBus,
                                                 constant,
                                                 notificationManager,
-                                                gitRepositoryInitializer);
+                                                gitRepositoryInitializer,
+                                                projectExplorer);
     }
 
     @Test

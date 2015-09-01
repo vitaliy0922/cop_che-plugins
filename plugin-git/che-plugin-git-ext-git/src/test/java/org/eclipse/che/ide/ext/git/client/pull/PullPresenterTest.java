@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 /**
  * Testing {@link PullPresenter} functionality.
  *
- * @author <a href="mailto:aplotnikov@codenvy.com">Andrey Plotnikov</a>
+ * @author Andrey Plotnikov
  */
 public class PullPresenterTest extends BaseTest {
     public static final boolean SHOW_ALL_INFORMATION = true;

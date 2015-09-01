@@ -20,6 +20,7 @@ import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.api.project.node.HasProjectDescriptor;
+import org.eclipse.che.ide.api.project.node.HasStorablePath;
 import org.eclipse.che.ide.api.project.tree.TreeNode;
 import org.eclipse.che.ide.api.project.tree.TreeStructure;
 import org.eclipse.che.ide.ext.svn.client.SubversionClientService;
@@ -48,15 +49,15 @@ import java.util.List;
 @Singleton
 public class MergePresenter extends SubversionActionPresenter implements MergeView.ActionDelegate {
 
-    private final MergeView view;
-    private final SubversionClientService subversionClientService;
-    private final AppContext appContext;
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final NotificationManager notificationManager;
+    private final MergeView                     view;
+    private final SubversionClientService       subversionClientService;
+    private final AppContext                    appContext;
+    private final DtoUnmarshallerFactory        dtoUnmarshallerFactory;
+    private final NotificationManager           notificationManager;
     private final FilteredTreeStructureProvider treeStructureProvider;
 
     /** Target tree node to merge. */
-    private TreeNode<?> targetNode;
+    private HasStorablePath targetNode;
 
     /** Subversion target to merge. */
     private SubversionItem mergeTarget;
@@ -105,17 +106,17 @@ public class MergePresenter extends SubversionActionPresenter implements MergeVi
         /** get info of selected project item */
         String target = getSelectedPaths().get(0);
         subversionClientService.info(appContext.getCurrentProject().getRootProject().getPath(), target, "HEAD", false,
-                new AsyncRequestCallback<InfoResponse>(dtoUnmarshallerFactory.newUnmarshaller(InfoResponse.class)) {
-                    @Override
-                    protected void onSuccess(InfoResponse result) {
-                        if (result.getErrorOutput() != null && !result.getErrorOutput().isEmpty()) {
-                            printResponse(null, null, result.getErrorOutput());
-                            notificationManager.showError("Unable to execute subversion command");
-                            return;
-                        }
+                                     new AsyncRequestCallback<InfoResponse>(dtoUnmarshallerFactory.newUnmarshaller(InfoResponse.class)) {
+                                         @Override
+                                         protected void onSuccess(InfoResponse result) {
+                                             if (result.getErrorOutput() != null && !result.getErrorOutput().isEmpty()) {
+                                                 printResponse(null, null, result.getErrorOutput());
+                                                 notificationManager.showError("Unable to execute subversion command");
+                                                 return;
+                                             }
 
-                        mergeTarget = result.getItems().get(0);
-                        view.targetTextBox().setValue(mergeTarget.getRelativeURL());
+                                             mergeTarget = result.getItems().get(0);
+                                             view.targetTextBox().setValue(mergeTarget.getRelativeURL());
 
                         String repositoryRoot = mergeTarget.getRepositoryRoot();
 

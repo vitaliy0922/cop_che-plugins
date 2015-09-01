@@ -84,7 +84,6 @@ public class BowerInstallAction extends CustomAction implements BuildFinishedCal
     public void onFinished(BuildStatus buildStatus) {
         // and refresh the tree if success
         if (buildStatus == BuildStatus.SUCCESSFUL) {
-//            eventBus.fireEvent(new RefreshProjectTreeEvent());
             projectExplorer.synchronizeTree();
         }
         buildInProgress = false;

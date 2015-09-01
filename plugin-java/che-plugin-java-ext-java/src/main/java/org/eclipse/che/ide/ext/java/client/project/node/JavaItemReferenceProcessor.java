@@ -52,7 +52,7 @@ public class JavaItemReferenceProcessor extends ItemReferenceProcessor {
                                          @Nonnull String newName) {
         dialogFactory.createMessageDialog("Unsupported operation",
                                           "At this moment we don't support to rename java files",
-                                          null);
+                                          null).show();
 
         return Promises.resolve(node.getData());
     }

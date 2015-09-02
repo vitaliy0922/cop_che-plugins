@@ -1061,9 +1061,6 @@ public final class Model {
         if (modules.isEmpty()) {
             root.removeChild("modules");
         } else {
-            if (!root.hasSingleChild("modules")) {
-                return;
-            }
             for (Element element : root.getSingleChild("modules").getChildren()) {
                 if (module.equals(element.getText())) {
                     element.remove();
